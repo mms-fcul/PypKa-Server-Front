@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[3],{s6aW:function(t,e,a){t.exports=a.p+"static/broken-pc-f7459a5a0d5bd1000954750450e505ef.jpg"},w2l6:function(t,e,a){"use strict";a.r(e);var n=a("q1tI"),s=a.n(n),o=a("Bl7J"),i=a("robv"),r=(a("vrFN"),a("s6aW")),u=a.n(r);e.default=function(){return s.a.createElement(o.a,null,s.a.createElement(i.a,{image:u.a,title:"NOT FOUND",subtitle:"You just hit a route that doesn&#39;t exist... the sadness."}))}}}]);
+//# sourceMappingURL=component---src-pages-404-js-a66b995d20e6e352b164.js.map
