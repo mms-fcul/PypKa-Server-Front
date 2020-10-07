@@ -42,9 +42,7 @@ function maybeRedirect(pathname) {
 
   if (redirect != null) {
     if (process.env.NODE_ENV !== `production`) {
-      const pageResources = _loader.default.loadPageSync(pathname);
-
-      if (pageResources != null) {
+      if (!_loader.default.isPageNotFound(pathname)) {
         console.error(`The route "${pathname}" matches both a page and a redirect; this is probably not intentional.`);
       }
     }
@@ -76,6 +74,15 @@ const onRouteUpdate = (location, prevLocation) => {
 };
 
 const navigate = (to, options = {}) => {
+  // Support forward/backward navigation with numbers
+  // navigate(-2) (jumps back 2 history steps)
+  // navigate(2)  (jumps forward 2 history steps)
+  if (typeof to === `number`) {
+    _history.globalHistory.navigate(to);
+
+    return;
+  }
+
   let {
     pathname
   } = (0, _gatsbyLink.parsePath)(to);
@@ -205,7 +212,7 @@ function init() {
 class RouteAnnouncer extends _react.default.Component {
   constructor(props) {
     super(props);
-    this.announcementRef = _react.default.createRef();
+    this.announcementRef = /*#__PURE__*/_react.default.createRef();
   }
 
   componentDidUpdate(prevProps, nextProps) {
@@ -216,23 +223,26 @@ class RouteAnnouncer extends _react.default.Component {
         pageName = document.title;
       }
 
-      const pageHeadings = document.getElementById(`gatsby-focus-wrapper`).getElementsByTagName(`h1`);
+      const pageHeadings = document.querySelectorAll(`#gatsby-focus-wrapper h1`);
 
       if (pageHeadings && pageHeadings.length) {
         pageName = pageHeadings[0].textContent;
       }
 
       const newAnnouncement = `Navigated to ${pageName}`;
-      const oldAnnouncement = this.announcementRef.current.innerText;
 
-      if (oldAnnouncement !== newAnnouncement) {
-        this.announcementRef.current.innerText = newAnnouncement;
+      if (this.announcementRef.current) {
+        const oldAnnouncement = this.announcementRef.current.innerText;
+
+        if (oldAnnouncement !== newAnnouncement) {
+          this.announcementRef.current.innerText = newAnnouncement;
+        }
       }
     });
   }
 
   render() {
-    return _react.default.createElement("div", (0, _extends2.default)({}, _routeAnnouncerProps.RouteAnnouncerProps, {
+    return /*#__PURE__*/_react.default.createElement("div", (0, _extends2.default)({}, _routeAnnouncerProps.RouteAnnouncerProps, {
       ref: this.announcementRef
     }));
   }
@@ -266,7 +276,7 @@ class RouteUpdates extends _react.default.Component {
   }
 
   render() {
-    return _react.default.createElement(_react.default.Fragment, null, this.props.children, _react.default.createElement(RouteAnnouncer, {
+    return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, this.props.children, /*#__PURE__*/_react.default.createElement(RouteAnnouncer, {
       location: location
     }));
   }
