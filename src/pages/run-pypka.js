@@ -127,9 +127,10 @@ const InputFloat = (props) => (
 )
 
 const InputFloatSimple = (props) => (
-    <input  className={ (props.condition1 && props.condition2) ? styles.borderPrimary + ' ' + props.extraStyle : props.extraStyle }
+    <input  
+            className={ (props.condition1 && props.condition2) ? styles.borderPrimary + ' ' + props.extraStyle : props.extraStyle }
             style={{width: props.width, textAlign: "center", padding: "5px 12px"}}
-            type="text" defaultValue={props.defaultValue} 
+            type='number' defaultValue={props.defaultValue} 
             aria-describedby="basic-addon1"
             disabled={!props.disableOn} 
             onChange={(e) => {
@@ -208,7 +209,7 @@ class RunPage extends React.Component {
     }
     setpHstep = (value) => {
       this.setState({
-        pHstep: value
+        pHstep: (value)
       });
     }
     setproteinDieletric = (value) => {
