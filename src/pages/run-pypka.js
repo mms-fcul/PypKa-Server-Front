@@ -102,7 +102,8 @@ async function submit_pypka_calculation (object) {
     nchains: object.state.nchains,
     nsites:  object.state.nsites,
     protein_name: object.state.protein_name,
-    time_estimate: object.state.time_estimate
+    time_estimate: object.state.time_estimate,
+    email: object.state.email
   }
   navigate(
     "/results/",
@@ -125,6 +126,7 @@ const InputFloat = (props) => (
                       width={"50%"} />
   </div>
 )
+
 
 const InputFloatSimple = (props) => (
     <input  
@@ -179,7 +181,9 @@ class RunPage extends React.Component {
       nsites: 0,
       nchains: 0,
 
-      time_estimate: 0
+      time_estimate: 0,  
+
+      email: ''
 
     }
 
@@ -225,6 +229,11 @@ class RunPage extends React.Component {
     setionicStrength = (value) => {
       this.setState({
         ionicStrength: value
+      })
+    }
+    setemail= (value) => {
+      this.setState({
+        email: value
       })
     }
 
@@ -650,6 +659,8 @@ class RunPage extends React.Component {
                         saveState={this.setionicStrength}
                       />
 
+
+          
                     </div>
                   </div>
               </div>
@@ -667,7 +678,60 @@ class RunPage extends React.Component {
                 </div>
               </div>
             </div>
-          </div>
+
+              
+            
+            
+            <br /><br /><br />
+            <div className="row gap-y">
+              <div className="col-8" style={{padding: "0px", marginBottom: "-15px"}}>
+                <h3 className="divider" 
+                    style={{ fontSize: "1rem", width: "80%", color: "#777"}}>Email Notification (optional)</h3>
+              </div>
+              <div className="col-4">
+
+              </div>
+  
+              <div className="col-12 col-lg-8">
+                  <div className="form-group">
+
+                    <div className="row">
+                      <div className="col-12 col-lg-6" style={{textAlign: 'right'}}>
+                            <label>Email</label>
+                      </div>
+                    
+                      <div className="col-12 col-lg-6">
+                        <input
+                          type="text"
+
+                          value={this.state.email}
+                          onChange={
+                            (e) => {
+                              const email = e.target.value
+                              this.setemail(email)
+                             }
+                          }
+                            
+                       />
+
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+              <div className="col-6 col-lg-4" style={{borderLeft: "0.5px solid rgba(47, 47, 47, 0.8)", }}>
+                <div className="form-group">
+                  <p>
+                    Insert email to receive notification of the end of the run.
+                  </p>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            
+            
+                  
       </section>
       <section className="section section-inverse py-40" style={{ backgroundColor: "#8ea6e6" }}>
           <div className="container">
