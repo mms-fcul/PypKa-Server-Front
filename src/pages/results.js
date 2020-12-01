@@ -50,7 +50,8 @@ async function submit_pypka_calculation (object_state) {
     pHstep: object_state.pHstep,
     epsin:  object_state.epsin,
     epsout: object_state.epsout,
-    ionic:  object_state.ionic
+    ionic:  object_state.ionic,
+    email: object_state.email
   }
   console.log(send_json)
   try {
