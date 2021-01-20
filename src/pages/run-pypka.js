@@ -29,13 +29,13 @@ async function downloadPDB(pdbid) {
 }
 
 async function getSubID(pdbid) {
-  const response = await axios.post('http://api.pypka.org/getSubID', {}, config)
+  const response = await axios.post('https://api.pypka.org/getSubID', {}, config)
   return response.data.subID
 }
 
 async function getNumberOfTitrableSites(pdbfile) {
   try {
-    const response = await axios.post('http://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
+    const response = await axios.post('https://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
     console.log(response)
     return response.data
   } catch (error) {
@@ -68,7 +68,7 @@ async function checkPdbId(object, pdbid) {
   if (error !== null) {
     pdbid_final = null
   } else {
-    console.log('PUTA', error !== null)
+    
     //protein_name = xmlDoc.getElementsByTagName('macroMolecule')[0].getAttribute('name') + ` (${pdbid})`
     protein_name = pdbid    
     pdb_file = await downloadPDB(pdbid)

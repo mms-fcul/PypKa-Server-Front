@@ -18,7 +18,7 @@ var config = { headers: {
 
 async function updateLatestSimulations() {
   try {
-    const response = await axios.post('http://api.pypka.org/getLatestsSubmissions', {}, config)
+    const response = await axios.post('https://api.pypka.org/getLatestsSubmissions', {}, config)
     const data = response.data
     console.log(data)
     return data

@@ -55,7 +55,7 @@ async function submit_pypka_calculation (object_state) {
   }
   console.log(send_json)
   try {
-    const response = await axios.post('http://api.pypka.org/submitSim', send_json, config)
+    const response = await axios.post('https://api.pypka.org/submitSim', send_json, config)
     const data = response.data
     console.log(data)
     return data
