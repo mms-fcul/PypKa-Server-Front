@@ -265,6 +265,15 @@ module.exports = {
         },
         editType: 'plot'
     },
+    computed: {
+        valType: 'any',
+        role: 'info',
+        editType: 'none',
+        description: [
+            'Placeholder for exporting automargin-impacting values namely',
+            '`margin.t`, `margin.b`, `margin.l` and `margin.r` in *full-json* mode.',
+        ].join(' ')
+    },
     paper_bgcolor: {
         valType: 'color',
         role: 'style',
@@ -281,6 +290,19 @@ module.exports = {
         editType: 'layoutstyle',
         description: [
             'Sets the background color of the plotting area in-between x and y axes.'
+        ].join(' ')
+    },
+    autotypenumbers: {
+        valType: 'enumerated',
+        values: ['convert types', 'strict'],
+        dflt: 'convert types',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'Using *strict* a numeric string in trace data is not converted to a number.',
+            'Using *convert types* a numeric string in trace data may be',
+            'treated as a number during automatic axis `type` detection.',
+            'This is the default value; however it could be overridden for individual axes.'
         ].join(' ')
     },
     separators: {

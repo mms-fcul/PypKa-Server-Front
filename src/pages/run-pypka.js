@@ -29,13 +29,13 @@ async function downloadPDB(pdbid) {
 }
 
 async function getSubID(pdbid) {
-  const response = await axios.post('http://127.0.0.1:5000/getSubID', {}, config)
+  const response = await axios.post('http://api.pypka.org/getSubID', {}, config)
   return response.data.subID
 }
 
 async function getNumberOfTitrableSites(pdbfile) {
   try {
-    const response = await axios.post('http://127.0.0.1:5000/getTitrableSitesNumber', {PDB: pdbfile}, config)
+    const response = await axios.post('http://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
     console.log(response)
     return response.data
   } catch (error) {
@@ -44,23 +44,33 @@ async function getNumberOfTitrableSites(pdbfile) {
   }
 }
 
-async function checkPdbId(object, pdbid) {
-  const response = await axios.get('https://www.rcsb.org/pdb/rest/describeMol?structureId=' + pdbid)  
+async function isPdbIdValid(pdbid) {
+  try {
+    const response = await axios.get('https://data.rcsb.org/rest/v1/holdings/status/' + pdbid)
+    console.log(response)
+    return null
+  } catch (error) {    
+    return "PDBID not found"
+  }
+}
 
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(response.data, "text/xml");
-  console.log(xmlDoc)  
-  const error = xmlDoc.getElementsByTagName('structureId')[0].getAttribute('error')
+async function checkPdbId(object, pdbid) {
+  //const response = await axios.get('https://www.rcsb.org/pdb/rest/describeMol?structureId=' + pdbid)    
   let pdbid_final = pdbid
   let pdb_file = null
   var nchains = 0
   var nsites = 0
   var protein_name = ''
+  var error = await isPdbIdValid(pdbid)
+
   console.log(error)
-  if (error) {
+  
+  if (error !== null) {
     pdbid_final = null
   } else {
-    protein_name = xmlDoc.getElementsByTagName('macroMolecule')[0].getAttribute('name') + ` (${pdbid})`
+    console.log('PUTA', error !== null)
+    //protein_name = xmlDoc.getElementsByTagName('macroMolecule')[0].getAttribute('name') + ` (${pdbid})`
+    protein_name = pdbid    
     pdb_file = await downloadPDB(pdbid)
     var data = await getNumberOfTitrableSites(pdb_file)
                                   
@@ -258,8 +268,18 @@ class RunPage extends React.Component {
         });
         return
       }
-
-      checkPdbId(object, pdbid)
+      if (pdbid.length !== 4) {
+        object.setState({
+          pdbcode_error: 'PBD code should be comprised of 4 characters'
+        });
+        return
+      } else {
+        object.setState({
+          pdbcode_error: 'Checking...'
+        });
+        checkPdbId(object, pdbid)
+      }     
+      
     }
     
     submitForm = () => {

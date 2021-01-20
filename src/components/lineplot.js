@@ -1,7 +1,7 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
 
-class LinePlot extends React.Component {
+export default class LinePlot extends React.Component {
     constructor(props) {
       super(props);
       this.state = { 
@@ -45,4 +45,3 @@ class LinePlot extends React.Component {
   }
 }
 
-export default LinePlot

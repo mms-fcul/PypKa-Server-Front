@@ -55,7 +55,7 @@ async function submit_pypka_calculation (object_state) {
   }
   console.log(send_json)
   try {
-    const response = await axios.post('http://127.0.0.1:5000/submitSim', send_json, config)
+    const response = await axios.post('http://api.pypka.org/submitSim', send_json, config)
     const data = response.data
     console.log(data)
     return data
@@ -121,24 +121,61 @@ const PKTable = (props) => {
 
 
 class Results extends React.Component {
-    state = this.props.location.state.send_json
+    constructor(props) {
+      super(props)
+      
+      this.state = {
+        subID: 0,
+        pdb: '',
+        inputNamingScheme: '',
+        outputpKs:         '',
+        outputfile:        '',
+        outputNamingScheme:'',
+        outputFilepH:      '', 
+        pHmin:   0,
+        pHmax:   0,
+        pHstep:  0,
+        epsin:   0,
+        epsout:  0,
+        ionic:   0,
+        nchains: 0,
+        nsites:  0,
+        protein_name: '',
+        time_estimate: 0,
+        email: '',
+        pKas: '',
+        tit_x: '',
+        tit_y: '',
+        params: '',
+        pdb_out: '',
+        titdatarevision: null
+      }
+      
+      
+      if (props.location.state) {
+        this.state = props.location.state.send_json
+        this.global = new GlobalState(this.state.subID)
+      } 
 
-    componentDidMount() {
-      const global = new GlobalState(this.state.subID)
+    }
+    //state = this.props.location.state.send_json    
 
-      console.log(global)
+    componentDidMount() {    
+      
 
-      if (global.state.pKas.length !== 0 && global.state.tit_x.length !== 0 && global.state.tit_y.length !== 0) {
+      console.log(this.global)      
+
+      if (this.global.state.pKas.length !== 0 && this.global.state.tit_x.length !== 0 && this.global.state.tit_y.length !== 0) {
         this.setState({
-          pKas: global.state.pKas,
-          tit_x: global.state.tit_x,
-          tit_y: global.state.tit_y,
-          params: global.state.params,
-          pdb_out: global.state.pdb_out,
+          pKas: this.global.state.pKas,
+          tit_x: this.global.state.tit_x,
+          tit_y: this.global.state.tit_y,
+          params: this.global.state.params,
+          pdb_out: this.global.state.pdb_out,
           titdatarevision: 1
         })
       } else {
-        run_pypka(this, global)
+        run_pypka(this, this.global)
       }
 
       var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm_share", b="https://embed.typeform.com/"; 
@@ -176,7 +213,7 @@ class Results extends React.Component {
     
     render() {
 
-      console.log(this.state.titdatarevision)
+      //console.log(this.state.titdatarevision)
       
 
       return (                    
