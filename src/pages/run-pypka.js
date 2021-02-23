@@ -29,13 +29,15 @@ async function downloadPDB(pdbid) {
 }
 
 async function getSubID(pdbid) {
-  const response = await axios.post('https://api.pypka.org/getSubID', {}, config)
+  //const response = await axios.post('https://api.pypka.org/getSubID', {}, config)
+  const response = await axios.post('http://127.0.0.1:5000/getSubID', {}, config)
   return response.data.subID
 }
 
 async function getNumberOfTitrableSites(pdbfile) {
   try {
-    const response = await axios.post('https://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
+    //const response = await axios.post('https://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
+    const response = await axios.post('http://127.0.0.1:5000/getTitrableSitesNumber', {PDB: pdbfile}, config)
     console.log(response)
     return response.data
   } catch (error) {
@@ -112,6 +114,7 @@ async function submit_pypka_calculation (object) {
     nchains: object.state.nchains,
     nsites:  object.state.nsites,
     protein_name: object.state.protein_name,
+    error: object.state.pdbcode_error,
     time_estimate: object.state.time_estimate,
     email: object.state.email
   }

@@ -17,6 +17,7 @@ import axios from "axios"
 import GlobalState from "../context/ThemeContext"
 
 import { ProgressCircle, ProgressLinear } from "../components/progressBar"
+import { object } from "prop-types"
 
 function downloadString(text, fileType, fileName) {
   var blob = new Blob([text], { type: fileType });
@@ -39,6 +40,9 @@ async function submit_pypka_calculation (object_state) {
   }
   const send_json = {
     subID:  object_state.subID,
+    pdbid: object_state.protein_name,
+    error: object_state.error,
+    pdbout: object_state.pdb_out,
     pdb:    object_state.pdb,
     inputNamingScheme: object_state.inputNamingScheme,
     outputpKs:          object_state.outputpKs,
@@ -51,11 +55,13 @@ async function submit_pypka_calculation (object_state) {
     epsin:  object_state.epsin,
     epsout: object_state.epsout,
     ionic:  object_state.ionic,
-    email: object_state.email
+    email: object_state.email,
+    tit_curve: object_state.titration_curve
   }
   console.log(send_json)
   try {
-    const response = await axios.post('https://api.pypka.org/submitSim', send_json, config)
+    //const response = await axios.post('https://api.pypka.org/submitSim', send_json, config)
+    const response = await axios.post('http://127.0.0.1:5000/submitSim', send_json, config)
     const data = response.data
     console.log(data)
     return data

@@ -5,6 +5,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import getSubmissions from "../pages/latest"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,83 +22,51 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ControlledExpansionPanels() {
+// TODO create new function to call /getFile
+// async function getFile(jobid, f_type) {
+
+async function downloadFile(jobid, f_type) {
+  let extension = '.csv'
+  // TODO create filename based on f_type; pdb is "text/txt" while remaining are .csv
+  let filename = jobid + "_" + f_type + extension
+  console.log(jobid, f_type, filename)
+  // await getFile(jobid, f_type)
+  // downloadString(tit_data, "text/" + extension, filename)
+}
+
+export default function ControlledExpansionPanels(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
+  
   return (
-    <div className={classes.root}>
+    
+    <div className={classes.root} style={{ marginBottom: "5px"}}>
       <ExpansionPanel expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography className={classes.heading}>General settings</Typography>
-          <Typography className={classes.secondaryHeading}>I am an expansion panel</Typography>
+          <Typography className={classes.heading}>#{props.jobid} {props.datetime}</Typography>
+          <Typography className={classes.secondaryHeading}>{props.name}</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Typography>
-            Nulla facilisi. Phasellus sollicitudin nulla et quam mattis feugiat. Aliquam eget
-            maximus est, id dignissim quam.
+            Download the results
           </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
-        >
-          <Typography className={classes.heading}>Users</Typography>
-          <Typography className={classes.secondaryHeading}>
-            You are currently not an owner
-          </Typography>
-        </ExpansionPanelSummary>
+        </ ExpansionPanelDetails>
         <ExpansionPanelDetails>
-          <Typography>
-            Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus, varius pulvinar
-            diam eros in elit. Pellentesque convallis laoreet laoreet.
-          </Typography>
+          <button onClick={() => downloadFile(props.jobid, 'pkas')} style={{width: "20%", marginRight: "5%", marginLeft: "2.5%"}}>pK<sub>a</sub>s</button>
+          <button onClick={() => downloadFile(props.jobid, 'pdb')}  style={{width: "20%", marginRight: "5%"}}>PDB file</button>
+          <button onClick={() => downloadFile(props.jobid, 'titration')}  style={{width: "20%", marginRight: "5%"}}>Titration Curve</button>
+          <button onClick={() => downloadFile(props.jobid, 'parameters')}  style={{width: "20%"}}>Parameters</button>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
-        >
-          <Typography className={classes.heading}>Advanced settings</Typography>
-          <Typography className={classes.secondaryHeading}>
-            Filtering has been entirely disabled for whole web server
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
-            vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel4bh-content"
-          id="panel4bh-header"
-        >
-          <Typography className={classes.heading}>Personal data</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas eros,
-            vitae egestas augue. Duis vel est augue.
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+      
     </div>
   );
 }

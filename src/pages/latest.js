@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Link } from "gatsby"
 
 import comp_cluster from "../images/comp_cluster.jpg"
@@ -16,22 +16,32 @@ var config = { headers: {
   'Access-Control-Allow-Origin': '*'}
 }
 
-async function updateLatestSimulations() {
+
+
+async function getSubmissions(setState) {
   try {
-    const response = await axios.post('https://api.pypka.org/getLatestsSubmissions', {}, config)
+    const response = await axios.post('http://127.0.0.1:5000/getSubmissions', {}, config)
     const data = response.data
-    console.log(data)
+    setState(data)
+    var submissions = data.length
     return data
-  } catch (error) {
-    console.log(error)
+  } catch (error){
+  console.log(error)
   }
 }
 
 const Latest = () => {
+  const [state, setState] = useState([]);
 
-  const componentWillMount = () => {
-    updateLatestSimulations()
-  }
+  useEffect(() => {
+    console.log(state)
+    if (state.length==0){
+      getSubmissions(setState);
+      
+    }
+    
+  })
+
 
   return (
   <Layout>
@@ -43,9 +53,10 @@ const Latest = () => {
       <div className="container">
         <div className="row gap-y">
           <div className="col-md-8 offset-md-2">
-            
-              <ControlledExpansionPanels />
-
+              
+              {state.map((value, index) => {
+                return <ControlledExpansionPanels jobid={value} name="Protein Name" datetime="23/02/2021 15:35" />
+              })}
             
           </div>
         </div>
