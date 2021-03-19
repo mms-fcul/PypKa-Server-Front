@@ -18,6 +18,10 @@ import GlobalState from "../context/ThemeContext"
 
 import { ProgressCircle, ProgressLinear } from "../components/progressBar"
 
+let pypka_api = "https://api.pypka.org"
+//let pypka_api = "http://127.0.0.1:5000"
+
+
 function downloadString(text, fileType, fileName) {
   var blob = new Blob([text], { type: fileType });
 
@@ -40,6 +44,9 @@ async function submit_pypka_calculation (object_state) {
   const send_json = {
     subID:  object_state.subID,
     pdb:    object_state.pdb,
+    pdbid:  object_state.pdbid,
+    onPKPDB: object_state.onPKPDB,
+    defaultParams: object_state.defaultParams,
     inputNamingScheme: object_state.inputNamingScheme,
     outputpKs:          object_state.outputpKs,
     outputfile:         object_state.outputfile,
@@ -55,7 +62,7 @@ async function submit_pypka_calculation (object_state) {
   }
   console.log(send_json)
   try {
-    const response = await axios.post('https://api.pypka.org/submitSim', send_json, config)
+    const response = await axios.post(`${pypka_api}/submitSim`, send_json, config)
     const data = response.data
     console.log(data)
     return data
@@ -75,6 +82,7 @@ async function run_pypka(object, global) {
     tit_y: titration_curve[1],
     pKas: response.pKas,
     params: response.parameters,
+    pI: response.pI,
     pdb_out: response.pdb_out,
     titdatarevision: 2
   })
@@ -146,6 +154,7 @@ class Results extends React.Component {
         pKas: '',
         tit_x: '',
         tit_y: '',
+        pI: null,
         params: '',
         pdb_out: '',
         titdatarevision: null
@@ -162,8 +171,7 @@ class Results extends React.Component {
 
     componentDidMount() {    
       
-
-      console.log(this.global)      
+      console.log('STATE', this.state)      
 
       if (this.global.state.pKas.length !== 0 && this.global.state.tit_x.length !== 0 && this.global.state.tit_y.length !== 0) {
         this.setState({
@@ -172,6 +180,7 @@ class Results extends React.Component {
           tit_y: this.global.state.tit_y,
           params: this.global.state.params,
           pdb_out: this.global.state.pdb_out,
+          pI: this.global.state.pI,
           titdatarevision: 1
         })
       } else {
@@ -257,6 +266,9 @@ class Results extends React.Component {
                 <div className={"card-body " + styles.cardBody}>
                     {this.state.tit_x ? <LinePlot x={this.state.tit_x} y={this.state.tit_y} width={"100px"} revision={this.state.titdatarevision}/> : <div><h5>Titration Curve</h5><ProgressCircle /></div> }
                 </div>
+                <div className={"card-body " + styles.cardBody} style={{ textAlign: 'center'}}>
+                  Isoelectric Point: {this.state.pI}
+                </div>                
               </div>
             </div>            
 

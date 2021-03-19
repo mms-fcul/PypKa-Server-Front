@@ -14,6 +14,7 @@ class GlobalState {
             this.state.pKas = savedSubmission.pKas
             this.state.tit_x = savedSubmission.titration[0]
             this.state.tit_y = savedSubmission.titration[1]
+            this.state.pI = savedSubmission.pI
             this.state.params = savedSubmission.parameters
             this.state.pdb_out = savedSubmission.pdb_out
         }

@@ -13,8 +13,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import comp_cluster from "../images/comp_cluster.jpg"
 
+let pypka_api = "https://api.pypka.org"
+//let pypka_api = "http://127.0.0.1:5000"
+
+
 function getTimeEstimate(nsites, pHmax, pHmin, pHstep) {
-  return nsites * 1.2 + ((pHmax - pHmin) / pHstep) * 0.5
+    return nsites * 1.2 + nsites * ((pHmax - pHmin) / pHstep) * 0.1
 }
 
 var config = { headers: {  
@@ -29,13 +33,13 @@ async function downloadPDB(pdbid) {
 }
 
 async function getSubID(pdbid) {
-  const response = await axios.post('https://api.pypka.org/getSubID', {}, config)
+  const response = await axios.post(`${pypka_api}/getSubID`, {}, config)
   return response.data.subID
 }
 
 async function getNumberOfTitrableSites(pdbfile) {
   try {
-    const response = await axios.post('https://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
+    const response = await axios.post(`${pypka_api}/getTitrableSitesNumber`, {PDB: pdbfile}, config)
     console.log(response)
     return response.data
   } catch (error) {
@@ -43,6 +47,35 @@ async function getNumberOfTitrableSites(pdbfile) {
     return error
   }
 }
+
+async function existsOnPKPDB(idcode) {
+  try {
+    const response = await axios.post(`${pypka_api}/pkpdb/${idcode}`, {}, config)
+    console.log(response)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error
+  }
+}
+
+
+async function idcodeOnPKPDB(pdbcode) {
+  const results = await existsOnPKPDB(pdbcode)
+  return results
+}
+
+async function checkPKPDB(object) {
+  var results = await existsOnPKPDB(object.state.pdbcode)
+  console.log(results, object.state.onPKPDB)
+  if (results === true) {
+    object.setState({
+      onPKPDB: true
+    });
+  }
+}
+
+
 
 async function isPdbIdValid(pdbid) {
   try {
@@ -58,6 +91,7 @@ async function checkPdbId(object, pdbid) {
   //const response = await axios.get('https://www.rcsb.org/pdb/rest/describeMol?structureId=' + pdbid)    
   let pdbid_final = pdbid
   let pdb_file = null
+  let foundonpkpdb = null
   var nchains = 0
   var nsites = 0
   var protein_name = ''
@@ -73,6 +107,7 @@ async function checkPdbId(object, pdbid) {
     protein_name = pdbid    
     pdb_file = await downloadPDB(pdbid)
     var data = await getNumberOfTitrableSites(pdb_file)
+    foundonpkpdb = await idcodeOnPKPDB(pdbid)
                                   
     if ('nchains' in data) {
       nchains = data.nchains
@@ -80,9 +115,11 @@ async function checkPdbId(object, pdbid) {
     }
     console.log(data, 'nchains' in data)
     console.log(protein_name, nchains, nsites)
+    console.log(foundonpkpdb)
   }
 
   object.setState({
+    onPKPDB: foundonpkpdb,
     pdbcode: pdbid_final,
     pdbcode_error: error,
     pdbfile: pdb_file,
@@ -98,6 +135,9 @@ async function submit_pypka_calculation (object) {
   const send_json = {
     subID: subID,
     pdb:               object.state.pdbfile,
+    pdbid:             object.state.pdbcode,
+    defaultParams:     object.state.defaultParams,
+    onPKPDB:           object.state.onPKPDB,
     inputNamingScheme: object.state.inputFileNamingScheme,
     outputpKs:         object.state.outputpKValues,
     outputfile:         object.state.outputPDBFile,
@@ -176,6 +216,9 @@ class RunPage extends React.Component {
       outputFilepH: 7,
       outputpKValues: true,
 
+      defaultParams: true,
+      onPKPDB: null,
+
       pHmin: 0,
       pHmax: 12,
       pHstep: 0.25,
@@ -226,7 +269,7 @@ class RunPage extends React.Component {
         pHstep: (value)
       });
     }
-    setproteinDieletric = (value) => {
+    setproteinDielectric = (value) => {
       this.setState({
         proteinDielectric: value
       });
@@ -320,6 +363,15 @@ class RunPage extends React.Component {
         if (isNaN(this.state.pHmin) || isNaN(this.state.pHmax) || isNaN(this.state.pHstep)) {
           triggerHappy = false
           console.log('pH values not defined', isNaN(this.state.pHmin), isNaN(this.state.pHmax), isNaN(this.state.pHstep))
+        }
+        else if (this.state.pHmin > this.state.pHmax) {
+          triggerHappy = false
+          console.log('pH min > pHmax')
+
+        } 
+        else if (this.state.pHstep <= 0) {
+          triggerHappy = false
+          console.log('pHstep <= 0')
         }
       }
 
@@ -582,13 +634,49 @@ class RunPage extends React.Component {
                     style={{ fontSize: "1rem", width: "80%", color: "#777"}}>Parameters</h3>
               </div>
               <div className="col-4">
-
+              
               </div>
+              <div className="col-12 col-lg-8">
+                <div className="form-group">
+                  <div className="row">
+                  <div className="col-12 col-lg-12" style={{margin: "auto", textAlign: "center"}}>
+                        <label className="custom-control custom-checkbox" style={{margin: "auto"}}>
+                            <input className="custom-control-input"
+                                   type="checkbox" checked={this.state.defaultParams}
+                                   onChange={(e) => {                                    
+                                        this.setState({
+                                            defaultParams: e.target.checked
+                                        })
+
+                                        console.log(this.state.inputModeRadio === 'pdb_code', this.state.pdbcode, e.target.checked, !this.state.pdbcode_error)
+                                        if (this.state.inputModeRadio === 'pdb_code' && this.state.pdbcode && e.target.checked && !this.state.pdbcode_error) {
+                                          checkPKPDB(this)
+                                        }
+                                        }} />
+                            <span className="custom-control-indicator"></span>
+                            <span className="custom-control-description" style={{width: "100px"}} >pK<sub>a</sub> values</span>
+                        </label>
   
+                  </div>
+                  
+                  </div>
+                </div>
+              </div>
+              <div className="col-12 col-lg-4" style={{borderLeft: "0.5px solid rgba(47, 47, 47, 0.8)", marginBottom: "15px" }}>
+                <div className="form-group">
+                  <p>
+                    We recommend using default parameters. By using them you'll be allowed to query the PKPDB database.
+                  </p>
+                </div>
+              </div>
+
+
+
               <div className="col-12 col-lg-4">
                   <div className="form-group">
 
-                    <div className="row">
+                    <div className="row">                    
+
                       <div className="col-12 col-lg-6">
                             <label>pH Titration Range</label>
                       </div>    
@@ -647,7 +735,7 @@ class RunPage extends React.Component {
                                   condition1={true}
                                   condition2={[null, '', NaN].includes(this.state.proteinDielectric)}
                                   disableOn={true}
-                                  saveState={this.setproteinDieletric}
+                                  saveState={this.setproteinDielectric}
                                 />
                         </div>
 
@@ -659,7 +747,7 @@ class RunPage extends React.Component {
                                   condition1={true}
                                   condition2={[null, '', NaN].includes(this.state.solventDielectric)}
                                   disableOn={true}
-                                  saveState={this.setsolventDieletric}
+                                  saveState={this.setsolventDielectric}
                                 />
                         </div>
                     </div>
@@ -758,7 +846,14 @@ class RunPage extends React.Component {
             <div className="row gap-y align-items-center text-center text-md-left" style={{ alignItems: "flex-end!important" }}>
               <div className="col-12 col-md-9">
                 <h4 className="fw-300 mb-0">{this.state.nsites} Titratable Sites over {this.state.nchains} Chains</h4>
-                            <h4 className="fw-300 mb-0">Estimated Running Time: {getTimeEstimate(this.state.nsites, this.state.pHmax, this.state.pHmin, this.state.pHstep)}s</h4>
+                
+                <h4 className="fw-300 mb-0" style={{display: (this.state.onPKPDB && this.state.defaultParams && !this.state.outputPDBFile) ? "none" : "block"}}>
+                  Estimated Running Time: {getTimeEstimate(this.state.nsites, this.state.pHmax, this.state.pHmin, this.state.pHstep)}s
+                </h4>
+                <h4 className="fw-300 mb-0" style={{display: (this.state.onPKPDB && this.state.defaultParams && !this.state.outputPDBFile) ? "block" : "none"}}>
+                  Results will be retrieved from the PKPDB database
+                </h4>
+                
                 <h4 className={styles.hidden + " fw-300 mb-0"} >Queued Submissions: 0 (Average Time per Submission: 60s)</h4>
               </div>
   
