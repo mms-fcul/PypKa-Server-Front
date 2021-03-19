@@ -67,12 +67,7 @@ async function submit_pypka_calculation (object_state) {
   }
   console.log(send_json)
   try {
-<<<<<<< HEAD
     const response = await axios.post(`${pypka_api}/submitSim`, send_json, config)
-=======
-    //const response = await axios.post('https://api.pypka.org/submitSim', send_json, config)
-    const response = await axios.post('http://127.0.0.1:5000/submitSim', send_json, config)
->>>>>>> d84070d7890e5ebc29b50c5898c46db49307d041
     const data = response.data
     console.log(data)
     return data

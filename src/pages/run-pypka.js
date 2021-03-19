@@ -33,23 +33,13 @@ async function downloadPDB(pdbid) {
 }
 
 async function getSubID(pdbid) {
-<<<<<<< HEAD
   const response = await axios.post(`${pypka_api}/getSubID`, {}, config)
-=======
-  //const response = await axios.post('https://api.pypka.org/getSubID', {}, config)
-  const response = await axios.post('http://127.0.0.1:5000/getSubID', {}, config)
->>>>>>> d84070d7890e5ebc29b50c5898c46db49307d041
   return response.data.subID
 }
 
 async function getNumberOfTitrableSites(pdbfile) {
   try {
-<<<<<<< HEAD
     const response = await axios.post(`${pypka_api}/getTitrableSitesNumber`, {PDB: pdbfile}, config)
-=======
-    //const response = await axios.post('https://api.pypka.org/getTitrableSitesNumber', {PDB: pdbfile}, config)
-    const response = await axios.post('http://127.0.0.1:5000/getTitrableSitesNumber', {PDB: pdbfile}, config)
->>>>>>> d84070d7890e5ebc29b50c5898c46db49307d041
     console.log(response)
     return response.data
   } catch (error) {
