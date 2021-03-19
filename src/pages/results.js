@@ -17,6 +17,7 @@ import axios from "axios"
 import GlobalState from "../context/ThemeContext"
 
 import { ProgressCircle, ProgressLinear } from "../components/progressBar"
+import { object } from "prop-types"
 
 let pypka_api = "https://api.pypka.org"
 //let pypka_api = "http://127.0.0.1:5000"
@@ -43,6 +44,9 @@ async function submit_pypka_calculation (object_state) {
   }
   const send_json = {
     subID:  object_state.subID,
+    pdbid: object_state.protein_name,
+    error: object_state.error,
+    pdbout: object_state.pdb_out,
     pdb:    object_state.pdb,
     pdbid:  object_state.pdbid,
     onPKPDB: object_state.onPKPDB,
@@ -58,11 +62,17 @@ async function submit_pypka_calculation (object_state) {
     epsin:  object_state.epsin,
     epsout: object_state.epsout,
     ionic:  object_state.ionic,
-    email: object_state.email
+    email: object_state.email,
+    tit_curve: object_state.titration_curve
   }
   console.log(send_json)
   try {
+<<<<<<< HEAD
     const response = await axios.post(`${pypka_api}/submitSim`, send_json, config)
+=======
+    //const response = await axios.post('https://api.pypka.org/submitSim', send_json, config)
+    const response = await axios.post('http://127.0.0.1:5000/submitSim', send_json, config)
+>>>>>>> d84070d7890e5ebc29b50c5898c46db49307d041
     const data = response.data
     console.log(data)
     return data
