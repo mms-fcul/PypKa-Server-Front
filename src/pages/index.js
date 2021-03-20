@@ -114,7 +114,9 @@ return (
           <h2>Citation</h2>
           <p>
             Are you using PypKa in your research? Please cite:<br />
-            <code>Pypka article in JSIM</code>
+            <code>Reis <span>et al. J Chem Inf Model.</span> 2020</code><br />
+            <a href="https://pubs.acs.org/doi/10.1021/acs.jcim.0c00718"><code>DOI: 10.1021/acs.jcim.0c00718</code></a>
+            
           </p>
 
           </div>

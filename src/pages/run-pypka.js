@@ -655,7 +655,7 @@ class RunPage extends React.Component {
                                         }
                                         }} />
                             <span className="custom-control-indicator"></span>
-                            <span className="custom-control-description" style={{width: "100px"}} >use default parameters</span>
+                            <span className="custom-control-description" style={{width: "150px"}} >use default parameters</span>
                         </label>
   
                   </div>
