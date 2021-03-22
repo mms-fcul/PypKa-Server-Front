@@ -20,6 +20,7 @@ const Header = ({ siteTitle }) => (
               <li className="nav-item"><Link className="nav-link" to="/run-pypka">Run Pypka</Link></li>
               <li className="nav-item"><Link className="nav-link" to="/latest">Latest Simulations</Link></li>
               <li className="nav-item"><a className="nav-link" href="https://github.com/mms-fcul/PypKa">Code</a></li>
+              <li className="nav-item"><a className="nav-link" href="/pKPDB">pKPDB</a></li>
               <li className="nav-item"><a className="nav-link" href="https://pypka.readthedocs.io/en/latest/">Documentation</a></li>
               <li className="nav-item"><a className="nav-link" href="http://mms.rd.ciencias.ulisboa.pt">MMS@FCUL</a></li>
             </ul>
