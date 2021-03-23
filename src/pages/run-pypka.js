@@ -13,8 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import comp_cluster from "../images/comp_cluster.jpg"
 
-let pypka_api = "https://api.pypka.org"
-//let pypka_api = "http://127.0.0.1:5000"
+//let pypka_api = "https://api.pypka.org"
+let pypka_api = "http://127.0.0.1:5000"
 
 
 function getTimeEstimate(nsites, pHmax, pHmin, pHstep) {
@@ -225,7 +225,7 @@ class RunPage extends React.Component {
       pHstep: 0.25,
 
       solventDielectric: 80,
-      proteinDielectric: 12,
+      proteinDielectric: 15,
 
       ionicStrength: 0.1,
 

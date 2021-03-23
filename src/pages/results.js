@@ -19,8 +19,8 @@ import GlobalState from "../context/ThemeContext"
 import { ProgressCircle, ProgressLinear } from "../components/progressBar"
 import { object } from "prop-types"
 
-let pypka_api = "https://api.pypka.org"
-//let pypka_api = "http://127.0.0.1:5000"
+//let pypka_api = "https://api.pypka.org"
+let pypka_api = "http://127.0.0.1:5000"
 
 
 function downloadString(text, fileType, fileName) {
@@ -88,8 +88,7 @@ async function run_pypka(object, global) {
     pKas: response.pKas,
     params: response.parameters,
     pI: response.pI,
-    pdb_out: response.pdb_out,
-    titdatarevision: 2
+    pdb_out: response.pdb_out
   })
 
   global.saveSubmission(object.state.subID, response)
@@ -161,8 +160,7 @@ class Results extends React.Component {
         tit_y: '',
         pI: null,
         params: '',
-        pdb_out: '',
-        titdatarevision: null
+        pdb_out: ''
       }
       
       
@@ -185,8 +183,7 @@ class Results extends React.Component {
           tit_y: this.global.state.tit_y,
           params: this.global.state.params,
           pdb_out: this.global.state.pdb_out,
-          pI: this.global.state.pI,
-          titdatarevision: 1
+          pI: this.global.state.pI
         })
       } else {
         run_pypka(this, this.global)
@@ -194,6 +191,9 @@ class Results extends React.Component {
 
       var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm_share", b="https://embed.typeform.com/"; 
       if(!gi.call(d,id)){ js=ce.call(d,"script"); js.id=id; js.src=b+"embed.js"; q=gt.call(d,"script")[0]; q.parentNode.insertBefore(js,q) } 
+
+      setTimeout(function(){window.dispatchEvent(new Event('resize'));; console.log('DONE')}, 500); 
+           
     }
 
     DownloadTitration = () => {
@@ -226,8 +226,6 @@ class Results extends React.Component {
     }
     
     render() {
-
-      //console.log(this.state.titdatarevision)
       
 
       return (                    
@@ -269,7 +267,7 @@ class Results extends React.Component {
               <div className={"card shadow-4 " + styles.card}>
               {this.state.tit_x ? <button type="button" className="btn btn-outline-primary" onClick={this.DownloadTitration} >Download CSV</button> : '' }
                 <div className={"card-body " + styles.cardBody}>
-                    {this.state.tit_x ? <LinePlot x={this.state.tit_x} y={this.state.tit_y} width={"100px"} revision={this.state.titdatarevision}/> : <div><h5>Titration Curve</h5><ProgressCircle /></div> }
+                    {this.state.tit_x ? <LinePlot x={this.state.tit_x} y={this.state.tit_y} /> : <div><h5>Titration Curve</h5><ProgressCircle /></div> }
                 </div>
                 <div className={"card-body " + styles.cardBody} style={{ textAlign: 'center'}}>
                   Isoelectric Point: {this.state.pI}
@@ -279,9 +277,9 @@ class Results extends React.Component {
 
             <div className="col-md-6">
               <div className={"card shadow-4 " + styles.card}>
-                {this.state.tit_x ? <button type="button" className="btn btn-outline-primary" onClick={this.DownloadpKTable} >Download CSV</button> : '' }
+                {this.state.pKas ? <button type="button" className="btn btn-outline-primary" onClick={this.DownloadpKTable} >Download CSV</button> : '' }
                 <div className={"card-body " + styles.cardBody}>
-                    <PKTable pKas={this.state.pKas} />
+                  <PKTable pKas={this.state.pKas} />
                 </div>
               </div>
             </div>
@@ -302,7 +300,7 @@ class Results extends React.Component {
               <h2>Help us design better analysis</h2>
               <p className="lead mb-6">Let us know what other plots and data you would like to see</p>
               <p>
-                <a className="btn btn-lg btn-round btn-info typeform-share button" href="https://hdcalgarve.typeform.com/to/jGgOaU" data-mode="popup" target="_blank">
+                <a className="btn btn-lg btn-round btn-info typeform-share button" href="http://mms.rd.ciencias.ulisboa.pt/#contact" data-mode="popup" target="_blank">
                   Reach Out
                 </a>
               </p>

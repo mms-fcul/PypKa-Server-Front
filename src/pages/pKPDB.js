@@ -15,8 +15,6 @@ import paper from "../images/pkpdb_paper.png"
 import library from "../images/library.jpg"
 
 
-import "../styles/page.css"
-
 const pkpdb = () => ( 
   <Layout>
  
@@ -72,7 +70,6 @@ const pkpdb = () => (
           </p>
 
           </div>
-
       </div>
     </section>
 
@@ -114,7 +111,7 @@ const pkpdb = () => (
         </div>
       </section>
 
-      <section class="section text-white py-8" style={{ backgroundImage: "linear-gradient(120deg, #a8c0ff 0%, #3f2b96 100%)" }}>
+      <section class="section text-white py-50" style={{ backgroundImage: "linear-gradient(120deg, #a8c0ff 0%, #3f2b96 100%)" }}>
         <div class="container">
           <header class="section-header">
             <small><strong>PypKa</strong></small>
