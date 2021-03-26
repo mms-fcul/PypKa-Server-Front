@@ -1,68 +1,71 @@
-import React, { useEffect, useState } from "react"
-import { Link } from "gatsby"
+import React, { useEffect, useState } from "react";
+import { Link } from "gatsby";
 
-import comp_cluster from "../images/comp_cluster.jpg"
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import Layout from "../components/layout"
-import HeaderBar from "../components/headerbar"
-import ControlledExpansionPanels from "../components/accordion"
+import comp_cluster from "../images/comp_cluster.jpg";
 
-import styles from "./run-pypka.module.css"
+import Layout from "../components/layout";
+import HeaderBar from "../components/headerbar";
+import ControlledExpansionPanels from "../components/accordion";
 
-import axios from "axios"
-
-var config = { headers: {  
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*'}
-}
-
-
-
-async function getSubmissions(setState) {
-  try {
-    const response = await axios.post('http://127.0.0.1:5000/getSubmissions', {}, config)
-    const data = response.data
-    setState(data)
-    var submissions = data.length
-    return data
-  } catch (error){
-  console.log(error)
-  }
-}
+import { getSubmissions } from "../utils/pypka";
 
 const Latest = () => {
   const [state, setState] = useState([]);
 
   useEffect(() => {
-    console.log(state)
-    if (state.length==0){
-      getSubmissions(setState);
-      
-    }
-    
-  })
-
+    const updateSubmissions = async () => {
+      if (state.length == 0) {
+        const results = await getSubmissions();
+        console.log(results);
+        if (results.status) {
+          setState(results.data);
+        } else {
+          toast.warning(`PypKa API Error: /getSubmissions`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      }
+    };
+    console.log(state);
+    updateSubmissions();
+  });
 
   return (
-  <Layout>
-    <HeaderBar image={comp_cluster} 
-             title={"Latest Simulations"} 
-             subtitle={""} />
+    <Layout>
+      <HeaderBar
+        image={comp_cluster}
+        title={"Latest Simulations"}
+        subtitle={""}
+      />
 
-    <section id="basic" className="section bb-1">
-      <div className="container">
-        <div className="row gap-y">
-          <div className="col-md-8 offset-md-2">
-              
+      <section id="basic" className="section bb-1">
+        <div className="container">
+          <div className="row gap-y">
+            <div className="col-md-8 offset-md-2">
               {state.map((value, index) => {
-                return <ControlledExpansionPanels jobid={value} name="Protein Name" datetime="23/02/2021 15:35" />
+                return (
+                  <ControlledExpansionPanels
+                    jobid={value[0]}
+                    datetime={value[1]}
+                    name={value[2]}
+                    subid={value[3]}
+                  />
+                );
               })}
-            
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  </Layout>
-)}
+      </section>
+    </Layout>
+  );
+};
 
-export default Latest
+export default Latest;
