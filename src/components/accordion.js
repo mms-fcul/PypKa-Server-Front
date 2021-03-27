@@ -1,4 +1,5 @@
 import React from "react";
+import { navigate } from "gatsby";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -53,7 +54,11 @@ export default function ControlledExpansionPanels(props) {
         onChange={handleChange("panel1")}
       >
         <ExpansionPanelSummary
-          onClick={(e) => window.open(`/results?jobid=${props.subid}`)}
+          onClick={(e) => {
+            navigate(`/results?jobid=${props.subid}`, {
+              state: { subID: props.subid },
+            });
+          }}
           expandIcon={<ExpandMoreIcon style={{ transform: "rotate(90deg)" }} />}
           aria-controls="panel1bh-content"
           id="panel1bh-header"

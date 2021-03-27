@@ -303,12 +303,15 @@ class RunPage extends React.Component {
       pdbid_final = null;
     } else {
       protein_name = pdbid;
+      console.log("/download PDB");
       pdb_file = await downloadPDB(pdbid);
 
       if (pdb_file.startsWith("ERROR")) {
         pdbid_final = null;
         error = pdb_file;
       } else {
+        console.log("/getNumberofTitrableSites");
+
         const response_ntits = await getNumberOfTitrableSites(pdb_file);
 
         let data = null;

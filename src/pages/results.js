@@ -97,17 +97,19 @@ class Results extends React.Component {
       props.location.search.startsWith("?jobid=")
     ) {
       this.state = props.location.state;
-      this.global = new GlobalState(this.state.subID);
+      this.global = new GlobalState(props.location.subID);
     } else if (props.location.search.startsWith("?query=")) {
       this.state = pKPDBParams;
-      this.state.pdbcode = props.location.search.split("?query=")[1];
-      this.state.query = this.state.pdbcode;
-      this.state.protein_name = this.state.pdbcode;
+      let pdbcode = props.location.search.split("?query=")[1];
+      this.state.pdbcode = pdbcode;
+      this.state.query = pdbcode;
+      this.state.protein_name = pdbcode;
 
       this.queryPKPDB();
     } else if (props.location.search.startsWith("?jobid=")) {
-      this.state.subID = props.location.search.split("?jobid=")[1];
-      this.global = new GlobalState(this.state.subID);
+      let subID = props.location.search.split("?jobid=")[1];
+      this.state.subID = subID;
+      this.global = new GlobalState(subID);
     }
   }
 
