@@ -84,32 +84,32 @@ class Results extends React.Component {
 
     console.log(props.location);
     console.log(("PASSED STATE", props.location.state));
-    if (props.location.state && props.location.search.startsWith("?query=")) {
-      this.state = props.location.state;
-      this.state.query = props.location.state.pdbcode;
-      this.global = new GlobalState(props.location.state.pdbcode);
-      this.global.saveSubmission(
-        props.location.state.pdbcode,
-        props.location.state
-      );
-    } else if (
-      props.location.state &&
-      props.location.search.startsWith("?jobid=")
-    ) {
-      this.state = props.location.state;
-      this.global = new GlobalState(props.location.subID);
-    } else if (props.location.search.startsWith("?query=")) {
-      this.state = pKPDBParams;
-      let pdbcode = props.location.search.split("?query=")[1];
-      this.state.pdbcode = pdbcode;
-      this.state.query = pdbcode;
-      this.state.protein_name = pdbcode;
-
-      this.queryPKPDB();
+    if (props.location.search.startsWith("?query=")) {
+      if (props.location.state && props.location.state.pdbcode) {
+        this.state = props.location.state;
+        this.state.query = props.location.state.pdbcode;
+        this.global = new GlobalState(props.location.state.pdbcode);
+        this.global.saveSubmission(
+          props.location.state.pdbcode,
+          props.location.state
+        );
+      } else {
+        this.state = pKPDBParams;
+        let pdbcode = props.location.search.split("?query=")[1];
+        this.state.pdbcode = pdbcode;
+        this.state.query = pdbcode;
+        this.state.protein_name = pdbcode;
+        this.queryPKPDB();
+      }
     } else if (props.location.search.startsWith("?jobid=")) {
-      let subID = props.location.search.split("?jobid=")[1];
-      this.state.subID = subID;
-      this.global = new GlobalState(subID);
+      if (props.location.state && props.location.subID) {
+        this.state = props.location.state;
+        this.global = new GlobalState(props.location.subID);
+      } else {
+        let subID = props.location.search.split("?jobid=")[1];
+        this.state.subID = subID;
+        this.global = new GlobalState(subID);
+      }
     }
   }
 
