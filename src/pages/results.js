@@ -233,7 +233,7 @@ class Results extends React.Component {
     downloadString(
       this.state.pdb_out,
       "text/txt",
-      `pdb_${this.state.outputFilepH}.out`
+      `pdb_${this.state.outputFilepH}.pdb`
     );
   };
 

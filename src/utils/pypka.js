@@ -17,6 +17,11 @@ var config = {
   },
 };
 
+export async function check_server_status() {
+  const response = await axios.get(`${pypka_api}`, {}, config);
+  return response;
+}
+
 export async function check_queue_size() {
   const response = await axios.get(`${pypka_api}/queue-size`, {}, config);
   return response;

@@ -25153,8 +25153,8 @@ body:not(.body-scrolled) .topbar.d-flex ~ .navbar {
   letter-spacing: 1px;
   font-size: 0.87em;
   word-spacing: 2px;
-  padding-left: 1.125rem;
-  padding-right: 1.125rem;
+  padding-left: 1.05rem;
+  padding-right: 1.05rem;
 }
 .nav-navbar .arrow {
   display: inline-block;

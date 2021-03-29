@@ -4,10 +4,15 @@ import logo from "../images/pypka_logo.png";
 import logo_inv from "../images/pypka_logo_inv.png";
 import { node } from "prop-types";
 
+import { check_server_status } from "../utils/pypka";
+
 const Header = ({ siteTitle }) => {
   const [state, setState] = useState(false);
+  const [status, setStatus] = useState("live");
 
   useEffect(() => {
+    updateStatus();
+
     if (state) {
       document.body.classList.add("navbar-open");
     } else {
@@ -31,18 +36,55 @@ const Header = ({ siteTitle }) => {
     return () => {};
   });
 
+  async function updateStatus() {
+    const response = await check_server_status();
+    if (!response || response.data.status !== "live") {
+      setStatus(response.data.status);
+    }
+  }
+
   return (
     <nav
       className="navbar navbar-expand-lg navbar-dark flex-column"
       style={{
         position: "absolute",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.6)",
-        height: "80px",
         top: "0",
-        marginTop: "15px",
+        padding: "0px",
       }}
     >
-      <div className="container">
+      <div
+        style={{
+          width: "100%",
+          background: "rgba(255, 255, 255, 0.8)",
+          marginBottom: "-20px",
+          display: status === "live" ? "none" : "block",
+        }}
+      >
+        <div className="row">
+          <div className="col-12">
+            <div className="nav nav-navbar">
+              <div
+                className="alert alert-danger"
+                style={{
+                  margin: "10px auto",
+                  lineHeight: "15px",
+                  borderRadius: "7px",
+                }}
+              >
+                <b>STATUS:</b> {status}{" "}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="container"
+        style={{
+          borderBottom: "1px solid rgba(255, 255, 255, 0.6)",
+          height: "80px",
+          marginTop: "15px",
+        }}
+      >
         <div className="navbar-left">
           <button
             className="navbar-toggler"
