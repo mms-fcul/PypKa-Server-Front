@@ -1,35 +1,25 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- *
- * See: https://www.gatsbyjs.org/docs/use-static-query/
- */
+import React from "react";
+import PropTypes from "prop-types";
+import Header from "./header.js";
+import Footer from "./footer.js";
+import { toast } from "react-toastify";
 
-import React from "react"
-import PropTypes from "prop-types"
-import Header from "./header.js"
-import Footer from "./footer.js"
-import { toast } from 'react-toastify';
-
-
-toast.configure()
+toast.configure();
 
 const Layout = ({ children }) => {
   return (
+    <>
+      <Header />
 
-      <>
-        <Header />
+      <main>{children}</main>
 
-        <main>{children}</main>
-
-        <Footer />
-      </>
-      
-  )
-}
+      <Footer />
+    </>
+  );
+};
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
-export default Layout
+export default Layout;

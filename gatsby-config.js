@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: `PypKa`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
+    title: `PypKa Server`,
+    description: `A free webserver for for flexible Poisson-Boltzmann based pKa calculations.`,
     author: `@pedror`,
   },
   plugins: [
@@ -32,4 +32,4 @@ module.exports = {
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
   ],
-}
+};

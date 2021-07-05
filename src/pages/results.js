@@ -175,24 +175,6 @@ class Results extends React.Component {
 
     console.log("ASTATE", this.state);
 
-    var qs,
-      js,
-      q,
-      s,
-      d = document,
-      gi = d.getElementById,
-      ce = d.createElement,
-      gt = d.getElementsByTagName,
-      id = "typef_orm_share",
-      b = "https://embed.typeform.com/";
-    if (!gi.call(d, id)) {
-      js = ce.call(d, "script");
-      js.id = id;
-      js.src = b + "embed.js";
-      q = gt.call(d, "script")[0];
-      q.parentNode.insertBefore(js, q);
-    }
-
     setTimeout(function () {
       window.dispatchEvent(new Event("resize"));
       console.log("DONE");
@@ -498,14 +480,15 @@ class Results extends React.Component {
               </div>
 
               <div className="col-md-6 text-center text-md-left">
-                <h2>Help us design better analysis</h2>
+                <h2>Help us develop a better service</h2>
                 <p className="lead mb-6">
-                  Let us know what other plots and data you would like to see
+                  Report errors and let us know what other plots and data you
+                  would like to see
                 </p>
                 <p>
                   <a
-                    className="btn btn-lg btn-round btn-info typeform-share button"
-                    href="http://mms.rd.ciencias.ulisboa.pt/#contact"
+                    className="btn btn-lg btn-round btn-info button"
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdRRt5i5edat78zyKE-dqAl7UhLP9PyCvLpv_JlYD8k7w9TvQ/viewform?usp=sf_link"
                     data-mode="popup"
                     target="_blank"
                   >

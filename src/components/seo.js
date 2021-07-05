@@ -73,7 +73,9 @@ function SEO({ description, lang, meta, title }) {
           content: metaDescription,
         },
       ].concat(meta)}
-    />
+    >
+      <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fe65064a2c1e4b39abac8fba76814880"}'></script>
+      </Helmet>
   );
 }
 
