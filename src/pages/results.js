@@ -16,8 +16,6 @@ import { queryPKPDB, check_queue_size, start_socket } from "../utils/pypka";
 
 import GlobalState from "../context/ThemeContext";
 
-import { object } from "prop-types";
-
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -148,7 +146,11 @@ class Results extends React.Component {
       } else {
         socket.on("pypka status", (msg) => {
           console.log("STATUS", msg);
-          if (msg.subID == this.state.subID) {
+          if (
+            msg.subID == this.state.subID &&
+            msg.content &&
+            msg.content.split("").length > 1
+          ) {
             this.setState({
               log: msg.content,
             });
@@ -273,7 +275,7 @@ class Results extends React.Component {
     console.log("QUEUE SIZE:", response, this.state.pKas || this.state.failed);
 
     if (response) {
-      const queue_size = response.data - 1;
+      const queue_size = response.data;
       this.setState({
         queue_size: queue_size,
       });
@@ -313,10 +315,7 @@ class Results extends React.Component {
 
         <section
           style={{
-            display:
-              !this.state.queue_size || this.state.log || this.state.pKas
-                ? "none"
-                : "block",
+            display: this.state.log || this.state.pKas ? "none" : "block",
             marginTop: "50px",
             fontSize: "18px",
           }}
@@ -325,10 +324,7 @@ class Results extends React.Component {
             <p
               id="queuelog"
               style={{
-                display:
-                  this.state.queue_size > 0 && this.state.queue_size < 0
-                    ? "block"
-                    : "none",
+                display: this.state.queue_size > 1 ? "block" : "none",
                 textAlign: "center",
               }}
             >
