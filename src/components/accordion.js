@@ -46,6 +46,7 @@ export default function ControlledExpansionPanels(props) {
   return (
     <div className={classes.root} style={{ marginBottom: "5px" }}>
       <ExpansionPanel
+        style={{ background: props.name == "QUEUED" ? "lightgrey" : "white" }}
         expanded={
           {
             /*expanded === "panel1"*/

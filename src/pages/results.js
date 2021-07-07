@@ -320,24 +320,17 @@ class Results extends React.Component {
             fontSize: "18px",
           }}
         >
-          <div>
-            <p
-              id="queuelog"
-              style={{
-                display: this.state.queue_size > 1 ? "block" : "none",
-                textAlign: "center",
-              }}
-            >
-              Jobs in Queue: {this.state.queue_size}
-            </p>
-            <p
-              style={{
-                display: this.state.queue_size === 0 ? "block" : "none",
-                textAlign: "center",
-              }}
-            >
-              Starting Job
-            </p>
+          <div
+            style={{
+              display: "block",
+              textAlign: "center",
+            }}
+          >
+            {this.state.queue_size > 1 ? (
+              <p>Jobs in Queue: {this.state.queue_size}</p>
+            ) : (
+              <p>Starting Job</p>
+            )}
           </div>
         </section>
 
