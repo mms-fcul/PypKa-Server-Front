@@ -606,7 +606,7 @@ class RunPage extends React.Component {
                     className="divider"
                     style={{ fontSize: "1rem", width: "80%", color: "#777" }}
                   >
-                    Ouput
+                    Output
                   </h3>
                   <div className="custom-controls-stacked">
                     <label
