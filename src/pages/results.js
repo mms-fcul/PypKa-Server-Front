@@ -134,45 +134,72 @@ class Results extends React.Component {
     } else {
       const socket = start_socket();
 
-      if (socket.disconnect === true) {
-        toast.warning(`PypKa Socket is not working`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      } else {
-        socket.on("pypka status", (msg) => {
-          console.log("STATUS", msg);
-          if (
-            msg.subID == this.state.subID &&
-            msg.content &&
-            msg.content.split("").length > 1
-          ) {
-            this.setState({
-              log: msg.content,
-            });
-          }
-        });
+      let subID = this.state.subID;
+      let page = this;
 
-        socket.on("pypka finished", (msg) => {
-          console.log("FINISHED", msg);
-          if (msg.subID == this.state.subID && msg.status === "success") {
-            this.setState({ ...msg.content });
-            this.global.saveSubmission(this.state.subID, msg.content);
-          } else if (msg.subID == this.state.subID && msg.status === "failed") {
-            console.log("BOOOM");
-          }
+      socket.onopen = function (e) {
+        console.log("Connection established");
+        console.log("Sending to server");
+        socket.send(subID);
+      };
 
-          if (!this.state.nchains && msg.content.pKas) {
-            this.update_missing_chains(msg.content.pKas);
-          }
-        });
+      socket.onmessage = function (event) {
+        console.log(`Received data from server`);
+        let data = JSON.parse(event.data);
+        console.log(data.status);
+        if (data.status === "running") {
+          console.log("Job still running");
+          page.setState({ log: data.content });
+          console.log(data.content);
+          setTimeout(function () {
+            socket.send(subID);
+          }, 2000);
+        } else if (data.status === "success") {
+          console.log("Job has finished");
+          page.setState({ ...data.content });
+          page.global.saveSubmission(subID, data.content);
+        } else if (data.status === "failed") {
+          console.log("BOOOM");
+        } else {
+          console.log("A non authorized status has been passed.");
+        }
+        if (
+          !page.state.nchains &&
+          typeof data.content == "object" &&
+          "pKas" in data.content &&
+          data.content.pKas
+        ) {
+          page.update_missing_chains(data.content.pKas);
+        }
+      };
 
-        this.update_pypka_status(socket);
-      }
+      //socket.on("pypka status", (msg) => {
+      //  console.log("STATUS", msg);
+      //  if (
+      //    msg.subID == this.state.subID &&
+      //    msg.content &&
+      //    msg.content.split("").length > 1
+      //  ) {
+      //    this.setState({
+      //      log: msg.content,
+      //    });
+      //  }
+      //});
+
+      //socket.on("pypka finished", (msg) => {
+      //  console.log("FINISHED", msg);
+      //  if (msg.subID == this.state.subID && msg.status === "success") {
+      //    this.setState({ ...msg.content });
+      //    this.global.saveSubmission(this.state.subID, msg.content);
+      //  } else if (msg.subID == this.state.subID && msg.status === "failed") {
+      //    console.log("BOOOM");
+      //  }
+      //  if (!this.state.nchains && msg.content.pKas) {
+      //    this.update_missing_chains(msg.content.pKas);
+      //  }
+      //});
+
+      // this.update_pypka_status(socket);
     }
 
     console.log("ASTATE", this.state);
@@ -296,10 +323,10 @@ class Results extends React.Component {
 
     if (this.state.failed || this.state.pKas) {
       return;
-    } else {
-      setTimeout(() => {
-        this.update_pypka_status(socket);
-      }, 1000);
+      // } else {
+      //   setTimeout(() => {
+      //     this.update_pypka_status(socket);
+      //   }, 1000);
     }
   }
 

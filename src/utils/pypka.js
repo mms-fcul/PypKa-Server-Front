@@ -1,11 +1,10 @@
 import axios from "axios";
-import { io } from "socket.io-client";
 
 let pypka_api = "https://api.pypka.org";
 //let pypka_api = "http://127.0.0.1:5000";
 
-let pypka_streamer = "https://socket.pypka.org";
-//let pypka_streamer = "http://127.0.0.1:8888";
+let pypka_streamer = "ws://socket.pypka.org";
+//let pypka_streamer = "ws://localhost:8888";
 
 var config = {
   headers: {
@@ -18,8 +17,13 @@ var config = {
 };
 
 export async function check_server_status() {
-  const response = await axios.get(`${pypka_api}`, {}, config);
-  return response;
+  try {
+    const response = await axios.get(`${pypka_api}`, {}, config);
+    return response;
+  } catch (error) {
+    console.log(error);
+    return { data: { status: "PypKa API Offline" } };
+  }
 }
 
 export async function check_queue_size() {
@@ -96,8 +100,7 @@ export async function existsOnPKPDB(idcode) {
 }
 
 export function start_socket() {
-  const socket = io(`${pypka_streamer}`, { transports: ["websocket"] });
-  console.log("SOCKET:", socket);
+  var socket = new WebSocket(`${pypka_streamer}`);
   return socket;
 }
 
