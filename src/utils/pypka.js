@@ -3,7 +3,7 @@ import axios from "axios";
 let pypka_api = "https://api.pypka.org";
 //let pypka_api = "http://127.0.0.1:5000";
 
-let pypka_streamer = "ws://socket.pypka.org";
+let pypka_streamer = "wss://socket.pypka.org";
 //let pypka_streamer = "ws://localhost:8888";
 
 var config = {
