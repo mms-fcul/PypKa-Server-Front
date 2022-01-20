@@ -12,7 +12,12 @@ import {
   check_queue_size,
   submit_pypka_calculation,
 } from "../utils/pypka";
-import { downloadPDB, isPdbIdValid } from "../utils/pdb";
+import {
+  downloadPDB,
+  downloadAlphaFold,
+  isPdbIdValid,
+  isUniprotIdValid,
+} from "../utils/pdb";
 
 import {
   inputGroup,
@@ -66,6 +71,9 @@ class RunPage extends React.Component {
     });
   };
   setpHstep = (value) => {
+    if (value == 0) {
+      return;
+    }
     this.setState({
       pHstep: value,
     });
@@ -110,16 +118,37 @@ class RunPage extends React.Component {
       });
       return;
     }
-    if (pdbid.length !== 4) {
+    if (![4, 6, 10].includes(pdbid.length)) {
       this.setState({
-        pdbcode_error: "PBD code should be comprised of 4 characters",
+        pdbcode_error:
+          "Please insert a valid PBD code or UniProtKB accession number.",
       });
-      return;
+    } else if (pdbid.length == 4) {
+      this.setState({
+        pdbcode_error: "Checking PDB code...",
+      });
+      this.checkPdbId(pdbid, "PDB");
+    } else if (pdbid.length === 6 || pdbid.length === 10) {
+      let re = new RegExp(
+        "[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}"
+      );
+      var codeValidity = re.exec(pdbid);
+
+      if (codeValidity && codeValidity[0] == codeValidity.input) {
+        this.setState({
+          pdbcode_error: "Checking UniprotKB accession number...",
+        });
+        this.checkPdbId(pdbid, "AF");
+      } else {
+        this.setState({
+          pdbcode_error: "Wrong UniProtKB accession number format",
+        });
+      }
     } else {
       this.setState({
-        pdbcode_error: "Checking...",
+        pdbcode_error:
+          "UniProtKB accession numbers should be comprised of 6 or 10 characters",
       });
-      this.checkPdbId(pdbid);
     }
   };
 
@@ -288,14 +317,19 @@ class RunPage extends React.Component {
     }
   }
 
-  async checkPdbId(pdbid) {
+  async checkPdbId(pdbid, mode) {
     let pdbid_final = pdbid;
     let pdb_file = null;
     let foundonpkpdb = null;
     var nchains = 0;
     var nsites = 0;
     var protein_name = "";
-    var error = await isPdbIdValid(pdbid);
+
+    if (mode == "PDB") {
+      var error = await isPdbIdValid(pdbid);
+    } else if (mode == "AF") {
+      var error = await isUniprotIdValid(pdbid);
+    }
 
     console.log("isPdbIdValid:", error);
 
@@ -304,7 +338,11 @@ class RunPage extends React.Component {
     } else {
       protein_name = pdbid;
       console.log("/download PDB");
-      pdb_file = await downloadPDB(pdbid);
+      if (mode == "PDB") {
+        pdb_file = await downloadPDB(pdbid);
+      } else if (mode == "AF") {
+        pdb_file = await downloadAlphaFold(pdbid);
+      }
 
       if (pdb_file.startsWith("ERROR")) {
         pdbid_final = null;
@@ -412,7 +450,7 @@ class RunPage extends React.Component {
                       />
                       <span className="custom-control-indicator"></span>
                       <span className="custom-control-description">
-                        PDB Code
+                        Protein Code
                       </span>
                     </label>
                     <label
@@ -450,7 +488,7 @@ class RunPage extends React.Component {
                     className="divider"
                     style={{ fontSize: "1rem", width: "80%", color: "#777" }}
                   >
-                    PDB Code
+                    Protein Code
                   </h3>
                   <input
                     className={
@@ -460,9 +498,10 @@ class RunPage extends React.Component {
                         : formControl
                     }
                     type="text"
-                    placeholder="Ex: 4LZT"
+                    placeholder="Ex: 4LZT or P00698"
                     name="pdb_code"
                     onChange={(e) => {
+                      this.setState({ pdbcode: null });
                       const pdbid = e.target.value;
                       this.retrieveFromPDB(pdbid);
                     }}
@@ -581,11 +620,15 @@ class RunPage extends React.Component {
                   <label>Help</label>
                   <p>
                     The input PDB file can be retrieved from the Protein Data
-                    Bank or it can be uploaded by the user.
+                    Bank, AlphaFold DB or it can be uploaded by the user.
                   </p>
                   <p>
-                    To use a structure from the Protein Data Bank please provide
-                    a valid 4-character PBD ID.
+                    To use a structure from the <b>Protein Data Bank</b> please
+                    provide a valid 4-character PBD identification code.
+                  </p>
+                  <p>
+                    To use a structure from the <b>AlphaFold DB</b> please
+                    provide a valid UniProtKB accession number.
                   </p>
                   <p>
                     To use a uploaded structure please select a PDB file with
@@ -641,6 +684,7 @@ class RunPage extends React.Component {
                       <input
                         type="checkbox"
                         className="custom-control-input"
+                        checked={this.state.outputPDBFile}
                         onChange={(e) => {
                           this.setState({
                             outputPDBFile: e.target.checked,
@@ -685,7 +729,7 @@ class RunPage extends React.Component {
                         : formControl
                     }
                     disabled={!this.state.outputPDBFile}
-                    defaultValue={""}
+                    defaultValue={this.state.outputFileNamingScheme}
                     onBlur={(e) => {
                       this.setState({
                         outputFileNamingScheme: e.target.value,
@@ -700,7 +744,18 @@ class RunPage extends React.Component {
                   </select>
                   <br />
 
-                  <div className={formControl}>
+                  <div
+                    className={
+                      this.state.outputPDBFile === true &&
+                      [null, ""].includes(this.state.outputFilepH)
+                        ? borderPrimary + " " + formControl
+                        : formControl
+                    }
+                    style={{
+                      border: "2px solid transparent",
+                      marginTop: "10px",
+                    }}
+                  >
                     <InputFloat
                       name={"pH value"}
                       extraStyle={"form-control"}
@@ -938,10 +993,10 @@ class RunPage extends React.Component {
               >
                 <div className="form-group">
                   <p>
-                    Please set pH min and pH max so that the pKa of all
-                    titratable amino acids is withing the titration range. pH
-                    step determines the difference between consecutive pH values
-                    in the simulated titration.
+                    Please set pH min and pH max so that the p<i>K</i>
+                    <sub>a</sub> of all titratable amino acids is withing the
+                    titration range. pH step determines the difference between
+                    consecutive pH values in the simulated titration.
                   </p>
                   <p>
                     The default value for the protein dielectric has been found
@@ -1089,8 +1144,8 @@ const default_values = {
   inputFile: null,
   inputFileNamingScheme: "GROMOS",
 
-  outputPDBFile: null,
-  outputFileNamingScheme: null,
+  outputPDBFile: true,
+  outputFileNamingScheme: "amber",
   outputFilepH: 7,
   outputpKValues: true,
 

@@ -18,12 +18,21 @@ export async function downloadPDB(pdbid) {
   }
 }
 
+export async function downloadAlphaFold(pdbid) {
+  try {
+    const url = `https://alphafold.ebi.ac.uk/files/AF-${pdbid}-F1-model_v2.pdb`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch {
+    return "ERROR on downloading AlphaFold PDB";
+  }
+}
+
 export async function isPdbIdValid(pdbid) {
   const url = `https://data.rcsb.org/rest/v1/holdings/status/${pdbid}`;
   const response = await axios
     .get(url, {}, config)
     .then(() => {
-      console.log(response);
       return null;
     })
     .catch((error) => {
@@ -33,6 +42,20 @@ export async function isPdbIdValid(pdbid) {
       } else {
         return "ERROR on GET data.rcsb.org";
       }
+    });
+  return response;
+}
+
+export async function isUniprotIdValid(uniprotid) {
+  const url = `https://www.ebi.ac.uk/proteins/api/proteins/${uniprotid}`;
+  console.warn(url);
+  const response = await axios
+    .get(url, {}, config)
+    .then(() => {
+      return null;
+    })
+    .catch((error) => {
+      return "ERROR on GET ebi.ac.uk";
     });
   return response;
 }

@@ -240,12 +240,8 @@ class Results extends React.Component {
     downloadString(params_cleaned, "text/txt", "params.txt");
   };
 
-  DownloadPDB = () => {
-    downloadString(
-      this.state.pdb_out,
-      "text/txt",
-      `pdb_${this.state.outputFilepH}.pdb`
-    );
+  DownloadPDB = (f, fname) => {
+    downloadString(f, "text/txt", fname);
   };
 
   async queryPKPDB() {
@@ -392,11 +388,34 @@ class Results extends React.Component {
                           pH range: {this.state.pHmin}-{this.state.pHmax}
                         </p>
                         <p>Ionic Strength: {this.state.ionicStrength}</p>
+
+                        {this.state.original_pdb ? (
+                          <button
+                            style={{ marginBottom: "10px" }}
+                            type="button"
+                            className="btn btn-outline-primary"
+                            onClick={() => {
+                              this.DownloadPDB(
+                                this.state.original_pdb,
+                                `pdb_${this.state.subID}.pdb`
+                              );
+                            }}
+                          >
+                            Original PDB
+                          </button>
+                        ) : (
+                          ""
+                        )}
                         {this.state.pdb_out ? (
                           <button
                             type="button"
                             className="btn btn-outline-primary"
-                            onClick={this.DownloadPDB}
+                            onClick={() => {
+                              this.DownloadPDB(
+                                this.state.pdb_out,
+                                `pdb_${this.state.subID}_${this.state.outputFilepH}.pdb`
+                              );
+                            }}
                           >
                             PDB at pH {this.state.outputFilepH}{" "}
                           </button>
