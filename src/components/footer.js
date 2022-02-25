@@ -19,7 +19,7 @@ const Footer = () => (
           <img src={fcul} />
         </div>
         <div className="col-12">
-          <hr class="my-0" />
+          <hr className="my-0" />
         </div>
         <div className="col-12 col-md-6">
           <p className="text-center text-md-left">
