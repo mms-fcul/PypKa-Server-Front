@@ -1,9 +1,6 @@
-
-
 video {
   max-width: 100%;
 }
-
 
 .video-wrapper {
   position: relative;
@@ -18,10 +15,18 @@ video {
     z-index: 0;
   }
 
-  &.ratio-21x9::before { padding-top: percentage(9 / 21) }
-  &.ratio-16x9::before { padding-top: percentage(9 / 16) }
-  &.ratio-4x3::before  { padding-top: percentage(3 / 4) }
-  &.ratio-1x1::before  { padding-top: percentage(1 / 1) }
+  &.ratio-21x9::before {
+    padding-top: calc(9 / 21 * 100);
+  }
+  &.ratio-16x9::before {
+    padding-top: calc(9 / 16 * 100);
+  }
+  &.ratio-4x3::before {
+    padding-top: calc(3 / 4 * 100);
+  }
+  &.ratio-1x1::before {
+    padding-top: calc(1 / 1 * 100);
+  }
 
   .poster {
     position: absolute;
@@ -32,7 +37,7 @@ video {
     background-size: cover;
     background-position: 50% 50%;
     z-index: 1;
-    transition: .3s;
+    transition: 0.3s;
   }
 
   .btn {
@@ -41,7 +46,7 @@ video {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
-    transition: .3s;
+    transition: 0.3s;
 
     &:hover {
       transform: translate(-50%, -50%);
@@ -59,18 +64,13 @@ video {
   }
 
   &.reveal {
-
     .poster,
     .btn {
       opacity: 0;
       visibility: hidden;
     }
-
   }
-
 }
-
-
 
 .video-btn-wrapper {
   position: relative;
@@ -80,17 +80,14 @@ video {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: .3s;
+    transition: 0.3s;
   }
-
 }
 
-
-
 // Background video
-// 
+//
 .bg-video {
-  position:absolute;
+  position: absolute;
   object-fit: cover;
   width: 100%;
   height: 100%;

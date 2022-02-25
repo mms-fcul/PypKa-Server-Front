@@ -1,116 +1,93 @@
-import Particles from 'react-particles-js';
 import React from "react";
+import Particles from "react-tsparticles";
 
-const CustomParticles = ({ data }) => {
-    return (
-    <Particles className="constellation" params={{
-    "particles": {
-      "number": {
-        "value": 50,
-        "density": {
-          "enable": true,
-          "value_area": 800
-        }
-      },
-      "color": {
-        "value": "#ffffff"
-      },
-      "shape": {
-        "type": "circle",
-        "stroke": {
-          "width": 0,
-          "color": "#000000"
+function CustomParticles() {
+  return (
+    <Particles
+      className="constellation"
+      id="tsparticles"
+      canvasClassName="constellationcanvas"
+      style={{
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: "0",
+        left: "0",
+        display: "none",
+      }}
+      options={{
+        background: {
+          color: {
+            value: "#4e3e7c",
+          },
         },
-        "polygon": {
-          "nb_sides": 5
+        fpsLimit: 60,
+        interactivity: {
+          events: {
+            onClick: {
+              enable: true,
+              mode: "push",
+            },
+            onHover: {
+              enable: true,
+              mode: "connect",
+            },
+            resize: true,
+          },
+          modes: {
+            push: {
+              quantity: 4,
+            },
+            connect: {
+              distance: 200,
+              radius: 125,
+            },
+          },
         },
-        "image": {
-          "src": "img/github.svg",
-          "width": 100,
-          "height": 100
-        }
-      },
-      "opacity": {
-        "value": 0.5,
-        "random": false,
-        "anim": {
-          "enable": false,
-          "speed": 1,
-          "opacity_min": 0.1,
-          "sync": false
-        }
-      },
-      "size": {
-        "value": 2,
-        "random": true,
-        "anim": {
-          "enable": false,
-          "speed": 20,
-          "size_min": 0.1,
-          "sync": false
-        }
-      },
-      "line_linked": {
-        "enable": false,
-        "distance": 150,
-        "color": "#ffffff",
-        "opacity": 0.4,
-        "width": 1
-      },
-      "move": {
-        "enable": true,
-        "speed": 6,
-        "direction": "none",
-        "random": false,
-        "straight": false,
-        "out_mode": "out",
-        "bounce": false,
-        "attract": {
-          "enable": false,
-          "rotateX": 600,
-          "rotateY": 1200
-        }
-      }
-    },
-    "interactivity": {
-      "detect_on": "window",
-      "events": {
-        "onhover": {
-          "enable": true,
-          "mode": "grab"
+        particles: {
+          color: {
+            value: "#ffffff",
+          },
+          links: {
+            color: "#ffffff",
+            distance: 150,
+            enable: false,
+            opacity: 0.5,
+            width: 1,
+          },
+          collisions: {
+            enable: false,
+          },
+          move: {
+            direction: "none",
+            enable: true,
+            outMode: "bounce",
+            random: false,
+            speed: 4,
+            straight: false,
+          },
+          number: {
+            density: {
+              enable: true,
+              area: 800,
+            },
+            value: 80,
+          },
+          opacity: {
+            value: 0.5,
+          },
+          shape: {
+            type: "circle",
+          },
+          size: {
+            random: true,
+            value: 4,
+          },
         },
-        "onclick": {
-          "enable": true,
-          "mode": "push"
-        },
-        "resize": true
-      },
-      "modes": {
-        "grab": {
-          "distance": 150,
-          "line_linked": {
-            "opacity": 0.8
-          }
-        },
-        "bubble": {
-          "distance": 200,
-          "size": 4,
-          "duration": 2,
-          "opacity": 8,
-          "speed": 3
-        },
-        "repulse": {
-          "distance": 80,
-          "duration": 0.4
-        },
-        "push": {
-          "particles_nb": 4
-        },
-        "remove": {
-          "particles_nb": 2
-        }
-      }
-    }} }/>
-)}
+        detectRetina: true,
+      }}
+    />
+  );
+}
 
-export default CustomParticles
+export default CustomParticles;
