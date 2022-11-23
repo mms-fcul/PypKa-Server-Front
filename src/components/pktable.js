@@ -4,7 +4,7 @@ import { ProgressCircle } from "../components/progressBar";
 const PKTable = (props) => {
   if (props.pKas) {
     var pKlist = props.pKas.map((sites) => (
-      <tr key={sites[2] + sites[1]}>
+      <tr key={sites[0] + sites[2] + sites[1]}>
         <th scope="row">{sites[0]}</th>
         <td>{sites[1]}</td>
         <td>{sites[2]}</td>

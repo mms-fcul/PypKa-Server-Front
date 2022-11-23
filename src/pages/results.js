@@ -12,7 +12,12 @@ import "../styles/thesaas.scss";
 import comp_cluster from "../images/comp_cluster.jpg";
 import graph_design from "../images/graph_design.png";
 
-import { queryPKPDB, check_queue_size, start_socket } from "../utils/pypka";
+import {
+  queryPKPDB,
+  check_queue_size,
+  start_socket,
+  start_sse,
+} from "../utils/pypka";
 
 import GlobalState from "../context/ThemeContext";
 
@@ -34,45 +39,6 @@ function downloadString(text, fileType, fileName) {
     URL.revokeObjectURL(a.href);
   }, 1500);
 }
-
-//async function run_pypka(object, global) {
-//  global.saveSubmitted(object.state.subID);
-//
-//  const socket = start_socket(object);
-//  this.update_pypka_status(socket, object);
-//
-//  const response = {}; // await submit_pypka_calculation(object.state);
-//
-//  socket.close();
-//
-//  if (response && "titration" in response) {
-//    const titration_curve = response.titration;
-//
-//    object.setState({
-//      tit_x: titration_curve[0],
-//      tit_y: titration_curve[1],
-//      pKas: response.pKas,
-//      params: response.parameters,
-//      pI: response.pI,
-//      pdb_out: response.pdb_out,
-//    });
-//
-//    global.saveSubmission(object.state.subID, response);
-//  } else {
-//    global.saveError(object.state.subID);
-//    console.log("ERROR");
-//    if (response && "Error" in response) {
-//      var paragraph = document.getElementById("pypkalog");
-//      paragraph.innerHTML = response.Error;
-//    }
-//
-//    object.setState({
-//      tit_x: [],
-//      pKas: [],
-//      failed: true,
-//    });
-//  }
-//}
 
 class Results extends React.Component {
   constructor(props) {
@@ -132,28 +98,34 @@ class Results extends React.Component {
     ) {
       this.setState({ ...this.global.state });
     } else {
-      const socket = start_socket();
-
       let subID = this.state.subID;
       let page = this;
 
-      socket.onopen = function (e) {
-        console.log("Connection established");
-        console.log("Sending to server");
-        socket.send(subID);
-      };
+      const sse = start_sse(subID);
+      // const socket = start_socket();
 
-      socket.onmessage = function (event) {
+      // socket.onopen = function (e) {
+      //   console.log("Connection established");
+      //   console.log("Sending to server");
+      //   socket.send(subID);
+      // };
+
+      // socket.onmessage = function (event) {
+      // sse.addEventListener("new_message", (event) => {
+      //   console.log(event.data);
+      // });
+      sse.addEventListener("new_message", (event) => {
         console.log(`Received data from server`);
         let data = JSON.parse(event.data);
+        console.log(data);
         console.log(data.status);
         if (data.status === "running") {
           console.log("Job still running");
           page.setState({ log: data.content });
           console.log(data.content);
-          setTimeout(function () {
-            socket.send(subID);
-          }, 2000);
+          // setTimeout(function () {
+          //   socket.send(subID);
+          // }, 2000);
         } else if (data.status === "success") {
           console.log("Job has finished");
           page.setState({ ...data.content });
@@ -171,35 +143,7 @@ class Results extends React.Component {
         ) {
           page.update_missing_chains(data.content.pKas);
         }
-      };
-
-      //socket.on("pypka status", (msg) => {
-      //  console.log("STATUS", msg);
-      //  if (
-      //    msg.subID == this.state.subID &&
-      //    msg.content &&
-      //    msg.content.split("").length > 1
-      //  ) {
-      //    this.setState({
-      //      log: msg.content,
-      //    });
-      //  }
-      //});
-
-      //socket.on("pypka finished", (msg) => {
-      //  console.log("FINISHED", msg);
-      //  if (msg.subID == this.state.subID && msg.status === "success") {
-      //    this.setState({ ...msg.content });
-      //    this.global.saveSubmission(this.state.subID, msg.content);
-      //  } else if (msg.subID == this.state.subID && msg.status === "failed") {
-      //    console.log("BOOOM");
-      //  }
-      //  if (!this.state.nchains && msg.content.pKas) {
-      //    this.update_missing_chains(msg.content.pKas);
-      //  }
-      //});
-
-      // this.update_pypka_status(socket);
+      });
     }
 
     console.log("ASTATE", this.state);

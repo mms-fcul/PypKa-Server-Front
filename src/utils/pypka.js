@@ -118,3 +118,12 @@ export async function getSubmissions(setState) {
     return { status: false };
   }
 }
+
+export function start_sse(subID) {
+  console.log("started sse");
+  var sse = new EventSource(`https://fastapi.pypka.org/stream?subID=${subID}`);
+  sse.addEventListener("new_message", (event) => {
+    console.log("PORRA");
+  });
+  return sse;
+}
