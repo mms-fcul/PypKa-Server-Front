@@ -20,7 +20,7 @@ export async function downloadPDB(pdbid) {
 
 export async function downloadAlphaFold(pdbid) {
   try {
-    const url = `https://alphafold.ebi.ac.uk/files/AF-${pdbid}-F1-model_v2.pdb`;
+    const url = `https://alphafold.ebi.ac.uk/files/AF-${pdbid}-F1-model_v4.pdb`;
     const response = await axios.get(url);
     return response.data;
   } catch {

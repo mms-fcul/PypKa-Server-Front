@@ -15,8 +15,8 @@ import graph_design from "../images/graph_design.png";
 import {
   queryPKPDB,
   check_queue_size,
-  start_socket,
   start_sse,
+  donwloadFile,
 } from "../utils/pypka";
 
 import GlobalState from "../context/ThemeContext";
@@ -77,10 +77,6 @@ class Results extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    console.log("UPDATED", this.state);
-  }
-
   componentDidMount() {
     if (this.state.query) {
       return;
@@ -102,18 +98,6 @@ class Results extends React.Component {
       let page = this;
 
       const sse = start_sse(subID);
-      // const socket = start_socket();
-
-      // socket.onopen = function (e) {
-      //   console.log("Connection established");
-      //   console.log("Sending to server");
-      //   socket.send(subID);
-      // };
-
-      // socket.onmessage = function (event) {
-      // sse.addEventListener("new_message", (event) => {
-      //   console.log(event.data);
-      // });
       sse.addEventListener("new_message", (event) => {
         console.log(`Received data from server`);
         let data = JSON.parse(event.data);
@@ -123,13 +107,11 @@ class Results extends React.Component {
           console.log("Job still running");
           page.setState({ log: data.content });
           console.log(data.content);
-          // setTimeout(function () {
-          //   socket.send(subID);
-          // }, 2000);
         } else if (data.status === "success") {
           console.log("Job has finished");
           page.setState({ ...data.content });
           page.global.saveSubmission(subID, data.content);
+          sse.close();
         } else if (data.status === "failed") {
           console.log("BOOOM");
         } else {
@@ -138,6 +120,7 @@ class Results extends React.Component {
         if (
           !page.state.nchains &&
           typeof data.content == "object" &&
+          data.content &&
           "pKas" in data.content &&
           data.content.pKas
         ) {
@@ -148,10 +131,9 @@ class Results extends React.Component {
 
     console.log("ASTATE", this.state);
 
-    setTimeout(function () {
-      window.dispatchEvent(new Event("resize"));
-      console.log("DONE");
-    }, 500);
+    // setTimeout(function () {
+    //   window.dispatchEvent(new Event("resize"));
+    // }, 5000);
   }
 
   DownloadTitration = () => {
@@ -338,9 +320,23 @@ class Results extends React.Component {
                             style={{ marginBottom: "10px" }}
                             type="button"
                             className="btn btn-outline-primary"
-                            onClick={() => {
+                            onClick={async () => {
+                              const toastId = toast.info(
+                                `Downloading pdb_${this.state.subID}.pdb`,
+                                {
+                                  position: "top-right",
+                                  hideProgressBar: true,
+                                  closeOnClick: false,
+                                  draggable: false,
+                                }
+                              );
+                              var response = await donwloadFile(
+                                this.state.subID,
+                                "original_pdb"
+                              );
+                              toast.dismiss(toastId);
                               this.DownloadPDB(
-                                this.state.original_pdb,
+                                response.data,
                                 `pdb_${this.state.subID}.pdb`
                               );
                             }}
@@ -354,9 +350,23 @@ class Results extends React.Component {
                           <button
                             type="button"
                             className="btn btn-outline-primary"
-                            onClick={() => {
+                            onClick={async () => {
+                              const toastId = toast.info(
+                                `Downloading pdb_${this.state.subID}.pdb`,
+                                {
+                                  position: "top-right",
+                                  hideProgressBar: true,
+                                  closeOnClick: false,
+                                  draggable: false,
+                                }
+                              );
+                              var response = await donwloadFile(
+                                this.state.subID,
+                                "pdb_out"
+                              );
+                              toast.dismiss(toastId);
                               this.DownloadPDB(
-                                this.state.pdb_out,
+                                response.data,
                                 `pdb_${this.state.subID}_${this.state.outputFilepH}.pdb`
                               );
                             }}
@@ -470,6 +480,7 @@ class Results extends React.Component {
                     href="https://docs.google.com/forms/d/e/1FAIpQLSdRRt5i5edat78zyKE-dqAl7UhLP9PyCvLpv_JlYD8k7w9TvQ/viewform?usp=sf_link"
                     data-mode="popup"
                     target="_blank"
+                    rel="noreferrer"
                   >
                     Reach Out
                   </a>

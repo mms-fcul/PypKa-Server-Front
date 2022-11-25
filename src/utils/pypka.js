@@ -54,6 +54,20 @@ export async function submit_pypka_calculation(send_state) {
   }
 }
 
+export function getNumberofResidues(pdbfile) {
+  var nres = 0;
+  var chains = new Set([]);
+  for (var i of pdbfile.split("\n")) {
+    if (i.slice(0, 4) == "ATOM") {
+      if (i.slice(12, 16).trim() == "C") {
+        nres += 1;
+      }
+      chains.add(i[21]);
+    }
+  }
+  return [nres, chains.size];
+}
+
 export async function getNumberOfTitrableSites(pdbfile) {
   try {
     const response = await axios.post(
@@ -109,6 +123,24 @@ export async function getSubmissions(setState) {
     const response = await axios.post(
       `${pypka_api}/getSubmissions`,
       {},
+      config
+    );
+    console.log(response);
+    return { status: true, data: response.data };
+  } catch (error) {
+    console.log(error);
+    return { status: false };
+  }
+}
+
+export async function donwloadFile(subID, fileType) {
+  try {
+    const response = await axios.post(
+      `${pypka_api}/getFile`,
+      {
+        file_type: fileType,
+        subID: subID,
+      },
       config
     );
     console.log(response);

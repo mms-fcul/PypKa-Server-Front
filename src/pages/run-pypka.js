@@ -7,7 +7,7 @@ import SEO from "../components/seo";
 import { InputFloat, InputFloatSimple } from "../components/inputfloat";
 
 import {
-  getNumberOfTitrableSites,
+  getNumberofResidues,
   existsOnPKPDB,
   check_queue_size,
   submit_pypka_calculation,
@@ -39,7 +39,15 @@ class RunPage extends React.Component {
   }
 
   getTimeEstimate = (nsites, pHmax, pHmin, pHstep) => {
-    return nsites * 1.2 + nsites * ((pHmax - pHmin) / pHstep) * 0.1;
+    var estimate_s = 0;
+    if (this.state.model == "pypka") {
+      estimate_s = (10 ** (1.66 * 10 ** -3 * nsites + 1.07)).toFixed(0);
+    } else {
+      estimate_s = (10 ** (3.97 * 10 ** -4 * nsites)).toFixed(0);
+    }
+    return estimate_s > 60
+      ? (estimate_s / 60).toFixed(0) + "m"
+      : estimate_s + "s";
   };
 
   setTimeEstimate = () => {
@@ -336,6 +344,12 @@ class RunPage extends React.Component {
     if (error !== null) {
       pdbid_final = null;
     } else {
+      const toastId = toast.info(`Retrieving structure of ${pdbid}`, {
+        position: "top-right",
+        hideProgressBar: true,
+        closeOnClick: false,
+        draggable: false,
+      });
       protein_name = pdbid;
       console.log("/download PDB");
       if (mode == "PDB") {
@@ -343,6 +357,7 @@ class RunPage extends React.Component {
       } else if (mode == "AF") {
         pdb_file = await downloadAlphaFold(pdbid);
       }
+      toast.dismiss(toastId);
 
       if (pdb_file.startsWith("ERROR")) {
         pdbid_final = null;
@@ -350,11 +365,14 @@ class RunPage extends React.Component {
       } else {
         console.log("/getNumberofTitrableSites");
 
-        const response_ntits = await getNumberOfTitrableSites(pdb_file);
+        const data = getNumberofResidues(pdb_file);
+        nsites = data[0];
+        nchains = data[1];
 
-        let data = null;
-        if (!response_ntits.status) {
-          toast.warning(`PypKa API Error: /getTitrableSitesNumber`, {
+        const response_pkpdb = await existsOnPKPDB(pdbid);
+
+        if (!response_pkpdb.status) {
+          toast.warning(`PypKa API Error: /pkpdb`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: true,
@@ -362,30 +380,20 @@ class RunPage extends React.Component {
             pauseOnHover: true,
             draggable: true,
           });
-        } else if ("nchains" in response_ntits.data) {
-          nchains = response_ntits.data.nchains;
-          nsites = response_ntits.data.nsites;
-
-          const response_pkpdb = await existsOnPKPDB(pdbid);
-
-          if (!response_pkpdb.status) {
-            toast.warning(`PypKa API Error: /pkpdb`, {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-            });
-          } else {
-            foundonpkpdb = response_pkpdb.data;
-          }
-
-          console.log(response_ntits.data);
-          console.log(protein_name, nchains, nsites);
-          console.log(foundonpkpdb);
+        } else {
+          foundonpkpdb = response_pkpdb.data;
         }
+
+        console.log(protein_name, nchains, nsites);
+        console.log(foundonpkpdb);
       }
+    }
+
+    var model = null;
+    var defaultParams = null;
+    if (nsites >= 1500) {
+      model = "pkai";
+      defaultParams = true;
     }
 
     this.setState({
@@ -396,6 +404,8 @@ class RunPage extends React.Component {
       nchains: nchains,
       nsites: nsites,
       protein_name: protein_name,
+      model: model ? model : this.state.model,
+      defaultParams: defaultParams ? defaultParams : this.state.defaultParams,
     });
   }
 
@@ -480,6 +490,59 @@ class RunPage extends React.Component {
                     </label>
                   </div>
                 </div>
+
+                <div className="form-group">
+                  <h3
+                    className="divider"
+                    style={{ fontSize: "1rem", width: "80%", color: "#777" }}
+                  >
+                    Model
+                  </h3>
+                  <div className="custom-controls-stacked">
+                    <label
+                      className="custom-control custom-radio"
+                      style={{ textAlign: "center", margin: "auto" }}
+                    >
+                      <input
+                        type="radio"
+                        id="model"
+                        className="custom-control-input"
+                        name="radio_model"
+                        val="pypka"
+                        checked={this.state.model === "pypka"}
+                        disabled={this.state.nsites >= 1500}
+                        onChange={(e) => {
+                          this.setState({
+                            model: e.target.getAttribute("val"),
+                          });
+                        }}
+                      />
+                      <span className="custom-control-indicator"></span>
+                      <span className="custom-control-description">PypKa</span>
+                    </label>
+                    <label
+                      className="custom-control custom-radio"
+                      style={{ textAlign: "center", margin: "auto" }}
+                    >
+                      <input
+                        type="radio"
+                        id="model"
+                        className="custom-control-input"
+                        name="radio_model"
+                        val="pkai"
+                        checked={this.state.model === "pkai"}
+                        onChange={(e) => {
+                          this.setState({
+                            model: e.target.getAttribute("val"),
+                            defaultParams: true,
+                          });
+                        }}
+                      />
+                      <span className="custom-control-indicator"></span>
+                      <span className="custom-control-description">pKAI</span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className="col-12 col-lg-4">
@@ -545,32 +608,16 @@ class RunPage extends React.Component {
                         console.log(content);
 
                         async function reportTitrableSites(content) {
-                          const response_ntits = await getNumberOfTitrableSites(
-                            content
-                          );
+                          const response_ntits = getNumberofResidues(content);
 
-                          if (!response_ntits.status) {
-                            toast.warning(
-                              `PypKa API Error: /getTitrableSitesNumber`,
-                              {
-                                position: "top-right",
-                                autoClose: 5000,
-                                hideProgressBar: true,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                              }
-                            );
-                          } else if ("nchains" in response_ntits.data) {
-                            let nchains = response_ntits.data.nchains;
-                            let nsites = response_ntits.data.nsites;
+                          let nchains = response_ntits[1];
+                          let nsites = response_ntits[0];
 
-                            self.setState({
-                              pdbfile: content,
-                              nchains: nchains,
-                              nsites: nsites,
-                            });
-                          }
+                          self.setState({
+                            pdbfile: content,
+                            nchains: nchains,
+                            nsites: nsites,
+                          });
                         }
                         reportTitrableSites(content);
                       };
@@ -821,6 +868,7 @@ class RunPage extends React.Component {
                           className="custom-control-input"
                           type="checkbox"
                           checked={this.state.defaultParams}
+                          disabled={this.state.model == "pkai"}
                           onChange={(e) => {
                             this.setState({
                               defaultParams: e.target.checked,
@@ -1073,8 +1121,9 @@ class RunPage extends React.Component {
             >
               <div className="col-12 col-md-9">
                 <h4 className="fw-300 mb-0">
-                  {this.state.nsites} Titratable Sites over {this.state.nchains}{" "}
-                  Chains
+                  {this.state.nsites
+                    ? `${this.state.nsites} Residues in ${this.state.nchains} Chains`
+                    : ""}
                 </h4>
 
                 <h4
@@ -1083,19 +1132,21 @@ class RunPage extends React.Component {
                     display:
                       this.state.onPKPDB &&
                       this.state.defaultParams &&
-                      !this.state.outputPDBFile
+                      !this.state.outputPDBFile &&
+                      this.state.model == "pypka"
                         ? "none"
                         : "block",
                   }}
                 >
-                  Estimated Running Time:{" "}
-                  {this.getTimeEstimate(
-                    this.state.nsites,
-                    this.state.pHmax,
-                    this.state.pHmin,
-                    this.state.pHstep
-                  )}
-                  s
+                  {this.state.nsites
+                    ? "Estimated Running Time: " +
+                      this.getTimeEstimate(
+                        this.state.nsites,
+                        this.state.pHmax,
+                        this.state.pHmin,
+                        this.state.pHstep
+                      )
+                    : ""}
                 </h4>
                 <h4
                   className="fw-300 mb-0"
@@ -1103,7 +1154,8 @@ class RunPage extends React.Component {
                     display:
                       this.state.onPKPDB &&
                       this.state.defaultParams &&
-                      !this.state.outputPDBFile
+                      !this.state.outputPDBFile &&
+                      this.state.model == "pypka"
                         ? "block"
                         : "none",
                   }}
@@ -1113,9 +1165,16 @@ class RunPage extends React.Component {
 
                 <h4
                   className=" fw-300 mb-0"
-                  style={{ display: this.state.onPKPDB ? "none" : "block" }}
+                  style={{
+                    display:
+                      this.state.onPKPDB &&
+                      this.state.defaultParams &&
+                      !this.state.outputPDBFile
+                        ? "none"
+                        : "block",
+                  }}
                 >
-                  Queued Submissions: {this.state.queue_size}
+                  Jobs in queue: {this.state.queue_size}
                 </h4>
               </div>
 
@@ -1138,13 +1197,14 @@ class RunPage extends React.Component {
 }
 
 const default_values = {
+  model: "pypka",
   inputModeRadio: "pdb_code",
   pdbcode: null,
   pdbcode_error: null,
   inputFile: null,
   inputFileNamingScheme: "GROMOS",
 
-  outputPDBFile: true,
+  outputPDBFile: false,
   outputFileNamingScheme: "amber",
   outputFilepH: 7,
   outputpKValues: true,

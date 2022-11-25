@@ -27,7 +27,9 @@ class GlobalState {
         ...results,
       };
     }
-    localStorage.setItem(subID, JSON.stringify(results));
+    const results_json = JSON.stringify(results);
+    checkStorageSpace(results_json);
+    localStorage.setItem(subID, results_json);
   };
 
   saveError = (subID) => {
@@ -39,8 +41,20 @@ class GlobalState {
         ...toSave,
       };
     }
-    localStorage.setItem(subID, JSON.stringify(toSave));
+    const toSave_json = JSON.stringify(toSave);
+    checkStorageSpace(toSave_json);
+    localStorage.setItem(subID, toSave_json);
   };
+}
+
+function checkStorageSpace(toAdd) {
+  const localStorageSize = new Blob(Object.values(localStorage)).size;
+  const newResultsSize = new Blob([toAdd]).size;
+
+  console.log(localStorageSize, newResultsSize);
+  if (localStorageSize + newResultsSize > 4500000) {
+    localStorage.clear();
+  }
 }
 
 export default GlobalState;
