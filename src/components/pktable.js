@@ -41,7 +41,7 @@ const PKTable = (props) => {
         <td>{sites[3] != "-" ? sites[3].toFixed(2) : sites[3]}</td>
         <td>
           {sites[3] != "-"
-            ? (pK_mod[sites[1].slice(0, 3)] - sites[3]).toFixed(2)
+            ? (sites[3] - pK_mod[sites[1].slice(0, 3)]).toFixed(2)
             : "-"}
         </td>
       </tr>
