@@ -272,7 +272,7 @@ class RunPage extends React.Component {
       });
       console.log("SUBMITTED", results.returned);
 
-      if (results.returned.subID) {
+      if (this.state.model === "pypka") {
         navigate(`/results?jobid=${results.returned.subID}`, {
           state: { ...this.state, subID: results.returned.subID },
         });
@@ -392,7 +392,7 @@ class RunPage extends React.Component {
     var model = null;
     var defaultParams = null;
     if (nsites >= 1500) {
-      model = "pkai";
+      model = "pKAI";
       defaultParams = true;
     }
 
@@ -529,8 +529,8 @@ class RunPage extends React.Component {
                         id="model"
                         className="custom-control-input"
                         name="radio_model"
-                        val="pkai"
-                        checked={this.state.model === "pkai"}
+                        val="pKAI"
+                        checked={this.state.model === "pKAI"}
                         onChange={(e) => {
                           this.setState({
                             model: e.target.getAttribute("val"),
@@ -540,6 +540,27 @@ class RunPage extends React.Component {
                       />
                       <span className="custom-control-indicator"></span>
                       <span className="custom-control-description">pKAI</span>
+                    </label>
+                    <label
+                      className="custom-control custom-radio"
+                      style={{ textAlign: "center", margin: "auto" }}
+                    >
+                      <input
+                        type="radio"
+                        id="model"
+                        className="custom-control-input"
+                        name="radio_model"
+                        val="pKAI+"
+                        checked={this.state.model === "pKAI+"}
+                        onChange={(e) => {
+                          this.setState({
+                            model: e.target.getAttribute("val"),
+                            defaultParams: true,
+                          });
+                        }}
+                      />
+                      <span className="custom-control-indicator"></span>
+                      <span className="custom-control-description">pKAI+</span>
                     </label>
                   </div>
                 </div>
@@ -707,6 +728,7 @@ class RunPage extends React.Component {
                         className="custom-control-input"
                         type="checkbox"
                         checked={this.state.outputpKValues}
+                        disabled
                         onChange={(e) => {
                           console.log(
                             this.state.outputpKValues + this.state.outputPDBFile
@@ -787,7 +809,8 @@ class RunPage extends React.Component {
                       Select the desired naming scheme
                     </option>
                     <option value="amber">AMBER</option>
-                    <option value="gromos_cph">GROMOS</option>
+                    <option value="charmm">CHARMM</option>
+                    <option value="gromos_cph">GROMOS (CpHMD)</option>
                   </select>
                   <br />
 
@@ -868,7 +891,10 @@ class RunPage extends React.Component {
                           className="custom-control-input"
                           type="checkbox"
                           checked={this.state.defaultParams}
-                          disabled={this.state.model == "pkai"}
+                          disabled={
+                            this.state.model == "pKAI" ||
+                            this.state.model == "pKAI+"
+                          }
                           onChange={(e) => {
                             this.setState({
                               defaultParams: e.target.checked,
@@ -1036,7 +1062,7 @@ class RunPage extends React.Component {
               </div>
 
               <div
-                className="col-6 col-lg-4"
+                className="col-12 col-lg-4"
                 style={{ borderLeft: "0.5px solid rgba(47, 47, 47, 0.8)" }}
               >
                 <div className="form-group">
@@ -1098,7 +1124,7 @@ class RunPage extends React.Component {
               </div>
 
               <div
-                className="col-6 col-lg-4"
+                className="col-12 col-lg-4"
                 style={{ borderLeft: "0.5px solid rgba(47, 47, 47, 0.8)" }}
               >
                 <div className="form-group">

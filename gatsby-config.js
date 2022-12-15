@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: `PypKa Server`,
-    description: `A free webserver for for flexible Poisson-Boltzmann based pKa calculations.`,
+    description: `A free webserver for Poisson-Boltzmann-based and AI-accelerated pKa calculations.`,
     author: `@pedror`,
   },
   plugins: [
@@ -18,8 +18,8 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
+        name: `PypKa-Server`,
+        short_name: `PypKa-Server`,
         start_url: `/`,
         background_color: `#663399`,
         theme_color: `#663399`,
@@ -27,8 +27,6 @@ module.exports = {
         icon: `src/images/favicon.png`, // This path is relative to the root of the site.
       },
     },
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.dev/offline
-    // `gatsby-plugin-offline`,
+    `gatsby-plugin-offline`,
   ],
 };
