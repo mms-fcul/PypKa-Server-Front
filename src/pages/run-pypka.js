@@ -259,6 +259,20 @@ class RunPage extends React.Component {
       submitted: true,
     });
 
+    console.log(
+      "SUBMITTED",
+      this.state.model === "pypka",
+      this.state.defaultParams,
+      this.state.onPKPDB,
+      !this.state.outputPDBFile,
+      (this.state.model === "pypka") &
+        this.state.defaultParams &
+        this.state.onPKPDB &
+        !this.state.outputPDBFile
+        ? "query"
+        : "submit"
+    );
+
     const results = await submit_pypka_calculation(this.state);
 
     if (results.status) {
@@ -270,17 +284,23 @@ class RunPage extends React.Component {
         pauseOnHover: true,
         draggable: true,
       });
-      console.log("SUBMITTED", results.returned);
 
-      if (this.state.model === "pypka") {
-        navigate(`/results?jobid=${results.returned.subID}`, {
-          state: { ...this.state, subID: results.returned.subID },
-        });
-      } else {
+      if (this.state.model !== "pypka") {
         navigate(`/results?query=${this.state.pdbcode}`, {
           state: { ...this.state, ...results.returned },
         });
       }
+
+      (this.state.model === "pypka") &
+      this.state.defaultParams &
+      this.state.onPKPDB &
+      !this.state.outputPDBFile
+        ? navigate(`/results?query=${this.state.pdbcode}`, {
+            state: { ...this.state, ...results.returned },
+          })
+        : navigate(`/results?jobid=${results.returned.subID}`, {
+            state: { ...this.state, subID: results.returned.subID },
+          });
     } else {
       toast.warning(`PypKa API Error: /submitSim`, {
         position: "top-right",
@@ -321,6 +341,10 @@ class RunPage extends React.Component {
     if (results === true) {
       this.setState({
         onPKPDB: true,
+      });
+    } else {
+      this.setState({
+        onPKPDB: false,
       });
     }
   }
@@ -588,6 +612,7 @@ class RunPage extends React.Component {
                       this.setState({ pdbcode: null });
                       const pdbid = e.target.value;
                       this.retrieveFromPDB(pdbid);
+                      this.checkPKPDB(this);
                     }}
                     disabled={this.state.inputModeRadio !== "pdb_code"}
                   />
@@ -899,21 +924,6 @@ class RunPage extends React.Component {
                             this.setState({
                               defaultParams: e.target.checked,
                             });
-
-                            console.log(
-                              this.state.inputModeRadio === "pdb_code",
-                              this.state.pdbcode,
-                              e.target.checked,
-                              !this.state.pdbcode_error
-                            );
-                            if (
-                              this.state.inputModeRadio === "pdb_code" &&
-                              this.state.pdbcode &&
-                              e.target.checked &&
-                              !this.state.pdbcode_error
-                            ) {
-                              this.checkPKPDB(this);
-                            }
                           }}
                         />
                         <span className="custom-control-indicator"></span>
@@ -1156,10 +1166,10 @@ class RunPage extends React.Component {
                   className="fw-300 mb-0"
                   style={{
                     display:
-                      this.state.onPKPDB &&
-                      this.state.defaultParams &&
-                      !this.state.outputPDBFile &&
-                      this.state.model == "pypka"
+                      (this.state.model === "pypka") &
+                      this.state.defaultParams &
+                      this.state.onPKPDB &
+                      !this.state.outputPDBFile
                         ? "none"
                         : "block",
                   }}
@@ -1178,10 +1188,10 @@ class RunPage extends React.Component {
                   className="fw-300 mb-0"
                   style={{
                     display:
-                      this.state.onPKPDB &&
-                      this.state.defaultParams &&
-                      !this.state.outputPDBFile &&
-                      this.state.model == "pypka"
+                      (this.state.model === "pypka") &
+                      this.state.defaultParams &
+                      this.state.onPKPDB &
+                      !this.state.outputPDBFile
                         ? "block"
                         : "none",
                   }}
