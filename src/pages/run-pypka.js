@@ -289,6 +289,7 @@ class RunPage extends React.Component {
         navigate(`/results?query=${this.state.pdbcode}`, {
           state: { ...this.state, ...results.returned },
         });
+        return;
       }
 
       (this.state.model === "pypka") &
