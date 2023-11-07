@@ -110,7 +110,7 @@ const pkpdb = () => (
                 120k proteins <br /> (csv file with ~1MB)
               </p>
               <p>
-                <a className="small-3 fw-600" href="https://api.pypka.org/isoelectric.csv">
+                <a className="small-3 fw-600" href="https://bucket.pypka.org/isoelectric.csv">
                   Download <i className="fa fa-angle-right small-5 pl-1"></i>
                 </a>
               </p>
@@ -130,7 +130,7 @@ const pkpdb = () => (
                 10M residues <br /> (csv file with ~61MB)
               </p>
               <p>
-                <a className="small-3 fw-600" href="https://api.pypka.org/pkas.csv">
+                <a className="small-3 fw-600" href="https://bucket.pypka.org/pkas.csv">
                   Download <i className="fa fa-angle-right small-5 pl-1"></i>
                 </a>
               </p>
@@ -147,7 +147,7 @@ const pkpdb = () => (
                 Sequence identity > 0.9 <br /> (csv file with ~48MB)
               </p>
               <p>
-                <a className="small-3 fw-600" href="https://api.pypka.org/similarity090.csv">
+                <a className="small-3 fw-600" href="https://bucket.pypka.org/similarity090.csv">
                   Download <i className="fa fa-angle-right small-5 pl-1"></i>
                 </a>
               </p>
