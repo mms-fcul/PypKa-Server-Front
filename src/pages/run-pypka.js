@@ -41,13 +41,19 @@ class RunPage extends React.Component {
   getTimeEstimate = (nsites, pHmax, pHmin, pHstep) => {
     var estimate_s = 0;
     if (this.state.model == "pypka") {
-      estimate_s = (10 ** (1.66 * 10 ** -3 * nsites + 1.07)).toFixed(0);
+      // OLD FORMULA: estimate_s = (10 ** (1.66 * 10 ** -3 * nsites + 1.07))
+      if (nsites < 600) {
+        estimate_s = 8.535 * 1.0048 ** nsites
+      } else {
+        estimate_s = 52.439 * 1.0025 ** nsites
+      }      
     } else {
-      estimate_s = (10 ** (3.97 * 10 ** -4 * nsites)).toFixed(0);
+      // OLD FORMULA: estimate_s = (10 ** (3.97 * 10 ** -4 * nsites))
+      estimate_s = 0.986 * 1.0009 ** nsites
     }
     return estimate_s > 60
       ? (estimate_s / 60).toFixed(0) + "m"
-      : estimate_s + "s";
+      : estimate_s.toFixed(0) + "s";
   };
 
   setTimeEstimate = () => {

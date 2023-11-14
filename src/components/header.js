@@ -12,29 +12,29 @@ const Header = ({ siteTitle }) => {
 
   useEffect(() => {
     updateStatus();
+  }, []);
 
-    if (state) {
-      document.body.classList.add("navbar-open");
-    } else {
-      document.body.classList.remove("navbar-open");
-    }
-
-    const element = document.getElementById("navbar-mobile");
+  useEffect(() => {    
+    const navbarElement = document.getElementById("navbar-mobile");
+    const navbarButtonElement = document.getElementById("toggler");
     const outsideClickListener = (event) => {
-      if (!element.contains(event.target) && state) {
+      if (
+        (event.target != navbarButtonElement && !navbarElement.contains(event.target) && state) || event.target.className == "nav-link"
+      )
+      {
         setState(false);
-        removeClickListener();
+      } else { 
+        document.addEventListener("click", outsideClickListener, {once: true});  
       }
     };
 
-    const removeClickListener = () => {
-      document.removeEventListener("click", outsideClickListener);
-    };
-
-    document.addEventListener("click", outsideClickListener);
-
-    return () => {};
-  });
+    if (state) {
+      document.body.classList.add("navbar-open");
+      document.addEventListener("click", outsideClickListener, {once: true});
+    } else {
+      document.body.classList.remove("navbar-open");      
+    }
+  }, [state]);
 
   async function updateStatus() {
     const response = await check_server_status();
@@ -91,9 +91,9 @@ const Header = ({ siteTitle }) => {
             id="toggler"
             type="button"
             style={{ margin: "auto", fontSize: "25px" }}
-            onClick={() => {
+            onClick={() => {               
               setState(true);
-            }}
+            }}          
           >
             &#9776;
           </button>

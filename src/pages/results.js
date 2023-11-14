@@ -306,7 +306,14 @@ class Results extends React.Component {
               <div className="col-md-6">
                 <div className={"card shadow-4 " + card}>
                   <div className={"card-body " + cardBody}>
-                    <h2>{this.state.protein_name}</h2>
+                  <div className="row gap-y">
+                      <div className="col-md-6">
+                        <h2>{this.state.protein_name}</h2>
+                      </div>
+                      <div className="col-md-6" style={{textAlign: "right"}}>
+                        <span class="badge badge-info">{this.state.model ? (this.state.model == "pypka" ? "PypKa (pKPDB)" : this.state.model) : "PypKa"}</span>
+                      </div>
+                    </div>
                     <div className="row gap-y">
                       <div className="col-md-6">
                         <p>Number of Titrable Sites: {this.state.nsites}</p>

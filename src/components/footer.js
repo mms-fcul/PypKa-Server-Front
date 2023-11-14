@@ -23,15 +23,8 @@ const Footer = () => (
         </div>
         <div className="col-12 col-md-6">
           <p className="text-center text-md-left">
-            PypKa {new Date().getFullYear()}{" "}
-            <a className="text-dark" href="http://mms.rd.ciencias.ulisboa.pt">
-              MMS@FCUL
-            </a>
-            . Crafted by{" "}
-            <a className="text-dark" href="https://github.com/pedrishi">
-              Pedro Reis
-            </a>
-          </p>
+            The PypKa Server is a free resource that is open to all users, including commercial users.
+          </p>          
         </div>
 
         <div className="col-12 col-md-6">

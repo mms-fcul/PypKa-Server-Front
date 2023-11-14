@@ -25,6 +25,18 @@ module.exports = {
         theme_color: `#663399`,
         display: `minimal-ui`,
         icon: `src/images/favicon.png`, // This path is relative to the root of the site.
+        icons: [
+          {
+            src: `src/images/favicon.png`,
+            sizes: `512x512`,
+            purpose: `any`,
+          },
+          {
+            src: `src/images/maskable_icon.png`,
+            sizes: `512x512`,
+            purpose: `maskable`,
+          },
+        ],
       },
     },
     `gatsby-plugin-offline`,
