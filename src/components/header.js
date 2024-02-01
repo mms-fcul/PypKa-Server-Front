@@ -122,7 +122,7 @@ const Header = ({ siteTitle }) => {
             </a>
             <a
               className="nav-link"
-              href="https://pypka.readthedocs.io/en/latest/"
+              href="https://pypka.readthedocs.io/en/latest/webserver.html"
             >
               Documentation
             </a>
